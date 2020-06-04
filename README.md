@@ -1,6 +1,10 @@
 # shinymas-fes-simulator-site
 
-> The simulator for Fes-Mode on The IDOLM@STER ShinyColors
+THE iDOLM@STER ShinyColors のフェスモードにおけるアピール値のシミュレーションサイトです。
+
+現在検証中です。
+
+公開サイト - https://kind-agnesi-553039.netlify.app/
 
 ## Build Setup
 
@@ -19,4 +23,17 @@ $ npm run start
 $ npm run generate
 ```
 
-For detailed explanation on how things work, check out [Nuxt.js docs](https://nuxtjs.org).
+For detailed explanation on how things work, check out [Nuxt.js docs](https://nuxtjs.org)
+
+# LINKs
+
+- THE iDOLM@STER ShinyColors 提供サイト - https://shinycolors.enza.fun/
+- シャニマス攻略 Wiki (各アピール値計算式の参考) - https://wikiwiki.jp/shinycolors/
+
+# Contact
+
+- Github Issue に記載
+
+# LICENSE
+
+MIT
