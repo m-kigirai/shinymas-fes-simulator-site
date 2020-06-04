@@ -4,7 +4,7 @@ THE iDOLM@STER ShinyColors のフェスモードにおけるアピール値の�
 
 現在検証中です。
 
-公開サイト - https://kind-agnesi-553039.netlify.app/
+現在の公開サイト - https://kind-agnesi-553039.netlify.app/
 
 ## Build Setup
 
