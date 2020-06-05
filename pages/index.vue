@@ -1,5 +1,5 @@
 <template>
-  <b-container>
+  <b-container fluid>
     <b-row>
       <b-col>
         <h1>
@@ -9,384 +9,579 @@
           シャニマスのフェスモードでのアピール値を算出するツールです。
           PCでの閲覧推奨です。
         </p>
-        <p>現在ベータ版で、デプロイ検証のための公開状態となっています。</p>
+        <p>現在ベータ版です。 算出結果が一致しないときがあります。</p>
       </b-col>
     </b-row>
     <br />
-    <b-row>
-      <b-col>
-        <h2>フェスユニットアピール値</h2>
-        <p>フェスユニット編成で表示されているままの数字を入力してください。</p>
-      </b-col>
-    </b-row>
-    <b-row cols="6">
-      <!-- header -->
-      <b-col>ポジション</b-col>
-      <b-col>Vocal</b-col>
-      <b-col>Dance</b-col>
-      <b-col>Visual</b-col>
-      <b-col>メンタル</b-col>
-      <b-col>思い出レベル</b-col>
-    </b-row>
-    <b-row cols="6" class="appeal" align-v="center">
-      <b-col>Leader</b-col>
-      <b-col v-for="(_, index) in unit.leader.appeals" :key="index">
-        <b-form-input v-model="unit.leader.appeals[index]" type="number" />
-      </b-col>
-      <b-col>
-        <b-form-input
-          v-model="unit.leader.memory"
-          type="range"
-          min="0"
-          max="5"
-        />
-        <p>{{ unit.leader.memory }}</p>
-      </b-col>
-    </b-row>
+    <div>
+      <b-tabs content-class="mt-3" pills justified>
+        <b-tab title="ユニット情報入力" active>
+          <b-row>
+            <b-col>
+              <h2>フェスユニットアピール値</h2>
+              <p>
+                フェスユニット編成で表示されているままの数字を入力してください。
+              </p>
+            </b-col>
+          </b-row>
 
-    <b-row cols="6" class="appeal" align-v="center">
-      <b-col>Vocal担当</b-col>
-      <b-col v-for="(_, index) in unit.vocal.appeals" :key="index">
-        <b-form-input v-model="unit.vocal.appeals[index]" type="number" />
-      </b-col>
-      <b-col>
-        <b-form-input
-          v-model="unit.vocal.memory"
-          type="range"
-          min="0"
-          max="5"
-        />
-        <p>{{ unit.vocal.memory }}</p>
-      </b-col>
-    </b-row>
+          <b-row cols="5" class="appeal" align-v="center">
+            <b-col>Leader</b-col>
+            <b-col
+              v-for="(_, index) in unit.leader.appeals"
+              :key="index"
+              class="cell-input"
+            >
+              <b-form-input
+                v-model="unit.leader.appeals[index]"
+                type="number"
+              />
+            </b-col>
+          </b-row>
 
-    <b-row cols="6" class="appeal" align-v="center">
-      <b-col>Center</b-col>
-      <b-col v-for="(_, index) in unit.center.appeals" :key="index">
-        <b-form-input v-model="unit.center.appeals[index]" type="number" />
-      </b-col>
-      <b-col>
-        <b-form-input
-          v-model="unit.center.memory"
-          type="range"
-          min="0"
-          max="5"
-        />
-        <p>{{ unit.center.memory }}</p>
-      </b-col>
-    </b-row>
+          <b-row cols="5" class="appeal" align-v="center">
+            <b-col>Vocal担当</b-col>
+            <b-col
+              v-for="(_, index) in unit.vocal.appeals"
+              :key="index"
+              class="cell-input"
+            >
+              <b-form-input v-model="unit.vocal.appeals[index]" type="number" />
+            </b-col>
+          </b-row>
 
-    <b-row cols="6" class="appeal" align-v="center">
-      <b-col>Dance担当</b-col>
-      <b-col v-for="(_, index) in unit.dance.appeals" :key="index">
-        <b-form-input v-model="unit.dance.appeals[index]" type="number" />
-      </b-col>
-      <b-col>
-        <b-form-input
-          v-model="unit.dance.memory"
-          type="range"
-          min="0"
-          max="5"
-        />
-        <p>{{ unit.dance.memory }}</p>
-      </b-col>
-    </b-row>
+          <b-row cols="5" class="appeal" align-v="center">
+            <b-col>Center</b-col>
+            <b-col
+              v-for="(_, index) in unit.center.appeals"
+              :key="index"
+              class="cell-input"
+            >
+              <b-form-input
+                v-model="unit.center.appeals[index]"
+                type="number"
+              />
+            </b-col>
+          </b-row>
 
-    <b-row cols="6" class="appeal" align-v="center">
-      <b-col>Visual担当</b-col>
-      <b-col v-for="(_, index) in unit.visual.appeals" :key="index">
-        <b-form-input v-model="unit.visual.appeals[index]" type="number" />
-      </b-col>
-      <b-col>
-        <b-form-input
-          v-model="unit.visual.memory"
-          type="range"
-          min="0"
-          max="5"
-        />
-        <p>{{ unit.visual.memory }}</p>
-      </b-col>
-    </b-row>
+          <b-row cols="5" class="appeal" align-v="center">
+            <b-col>Dance担当</b-col>
+            <b-col
+              v-for="(_, index) in unit.dance.appeals"
+              :key="index"
+              class="cell-input"
+            >
+              <b-form-input v-model="unit.dance.appeals[index]" type="number" />
+            </b-col>
+          </b-row>
+
+          <b-row cols="5" class="appeal" align-v="center">
+            <b-col>Visual担当</b-col>
+            <b-col
+              v-for="(_, index) in unit.visual.appeals"
+              :key="index"
+              class="cell-input"
+            >
+              <b-form-input
+                v-model="unit.visual.appeals[index]"
+                type="number"
+              />
+            </b-col>
+          </b-row>
+          <br />
+          <b-row>
+            <b-col>
+              <h2>思い出レベル</h2>
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col sm="3">
+              Leader
+            </b-col>
+            <b-col sm="1">
+              <p>Lv. {{ unit.leader.memory }}</p>
+            </b-col>
+            <b-col sm="8">
+              <b-form-input
+                v-model="unit.leader.memory"
+                type="range"
+                min="0"
+                max="5"
+              />
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col sm="3">
+              Vocal担当
+            </b-col>
+            <b-col sm="1">
+              <p>Lv. {{ unit.vocal.memory }}</p>
+            </b-col>
+            <b-col sm="8">
+              <b-form-input
+                v-model="unit.vocal.memory"
+                type="range"
+                min="0"
+                max="5"
+              />
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col sm="3">
+              Center
+            </b-col>
+            <b-col sm="1">
+              <p>Lv. {{ unit.center.memory }}</p>
+            </b-col>
+            <b-col sm="8">
+              <b-form-input
+                v-model="unit.center.memory"
+                type="range"
+                min="0"
+                max="5"
+              />
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col sm="3">
+              Dance担当
+            </b-col>
+            <b-col sm="1">
+              <p>Lv. {{ unit.dance.memory }}</p>
+            </b-col>
+            <b-col sm="8">
+              <b-form-input
+                v-model="unit.dance.memory"
+                type="range"
+                min="0"
+                max="5"
+              />
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col sm="3">
+              Visual担当
+            </b-col>
+            <b-col sm="1">
+              <p>Lv. {{ unit.visual.memory }}</p>
+            </b-col>
+            <b-col sm="8">
+              <b-form-input
+                v-model="unit.visual.memory"
+                type="range"
+                min="0"
+                max="5"
+              />
+            </b-col>
+          </b-row>
+          <br />
+          <b-row>
+            <b-col>
+              <h2>フェスユニット表記</h2>
+              <p>
+                フェスユニット編成の下に表記されている数値と一致するかを確認してください。
+              </p>
+            </b-col>
+          </b-row>
+          <b-row align-v="center">
+            <b-col> 思い出: {{ unitCalc.memory.label }} </b-col>
+          </b-row>
+          <b-row cols="4" class="appeal" align-v="center">
+            <b-col>Vo. {{ unitCalc.vo }}</b-col>
+            <b-col>Da. {{ unitCalc.da }}</b-col>
+            <b-col>Vi. {{ unitCalc.vi }}</b-col>
+            <b-col>Me. {{ unitCalc.me }}</b-col>
+          </b-row>
+          <br />
+          <b-row>
+            <b-col>
+              <h2>アビリティ (G.R.A.D.)</h2>
+              <p>
+                ユニット全体で現在有効となっているアビリティの個数を入力してください。
+              </p>
+            </b-col>
+          </b-row>
+          <b-row v-for="item in abilityItems" :key="item.key">
+            <b-col sm="3">
+              <label :for="`ability-${item.key}`">{{ item.label }}</label>
+            </b-col>
+            <b-col sm="1">
+              <p>{{ abilities[item.key] }}</p>
+            </b-col>
+            <b-col sm="8">
+              <b-form-input
+                :id="`ability-${item.key}`"
+                v-model="abilities[item.key]"
+                type="range"
+                :min="item.min"
+                :max="item.max"
+              ></b-form-input>
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col>
+              <!-- save -->
+            </b-col>
+          </b-row>
+          <br />
+        </b-tab>
+        <b-tab title="アピール値計算">
+          <b-row>
+            <b-col>
+              <h2>実アピール値算出</h2>
+              <p>
+                以下にアピール時の状況を入力することで実際のアピール値を算出します。
+              </p>
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col sm="2">
+              現在のターン数
+            </b-col>
+            <b-col sm="1">
+              {{ appealCalcValues.turn }}
+            </b-col>
+            <b-col sm="9">
+              <b-form-input
+                v-model="appealCalcValues.turn"
+                type="range"
+                min="1"
+                max="20"
+              ></b-form-input>
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col sm="3">
+              思い出ゲージ(%)
+            </b-col>
+            <b-col sm="9">
+              <b-form-input
+                v-model="appealCalcValues.memory"
+                type="number"
+                step="0.001"
+              />
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col sm="3">
+              ターン開始時メンタル
+            </b-col>
+            <b-col sm="9">
+              <b-form-input v-model="appealCalcValues.mental" type="number" />
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col sm="3">
+              アピール・スキルによる思い出ゲージ上昇量
+            </b-col>
+            <b-col sm="9">
+              <b-form-input
+                v-model="appealCalcValues.extraMemoryUp"
+                type="number"
+              />
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col sm="6"></b-col>
+            <b-col sm="6">
+              <b-button
+                variant="outline-success"
+                class="float-right"
+                @click="calcNextTurn"
+              >
+                次ターンへ (思い出自動計算)
+              </b-button>
+              <b-button
+                variant="outline-primary"
+                class="float-right"
+                @click="firstTurn"
+              >
+                ターンの初期化
+              </b-button>
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col sm="3">
+              アピール係数
+            </b-col>
+            <b-col sm="9">
+              <b-form-select
+                v-model="appealCalcValues.action"
+                :options="appealActionOptions"
+              ></b-form-select>
+            </b-col>
+          </b-row>
+
+          <b-row>
+            <b-col sm="3">
+              <label for="appealPosition">アピール実施ポジション</label>
+            </b-col>
+            <b-col sm="9">
+              <b-form-select
+                id="appealPosition"
+                v-model="appealCalcValues.position"
+                :options="appealPositionOptions"
+                @change="positionChoosed"
+              ></b-form-select>
+            </b-col>
+          </b-row>
+
+          <b-row>
+            <b-col sm="3"> </b-col>
+            <b-col sm="3">
+              Vo.情報
+            </b-col>
+            <b-col sm="3">
+              Da.情報
+            </b-col>
+            <b-col sm="3">
+              Vi.情報
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col sm="3">
+              アピール倍率(利用しない場合は0)
+            </b-col>
+            <b-col sm="3">
+              <b-form-input
+                v-model="appealCalcValues.factor.vo"
+                type="number"
+                step="0.001"
+              />
+            </b-col>
+            <b-col sm="3">
+              <b-form-input
+                v-model="appealCalcValues.factor.da"
+                type="number"
+                step="0.001"
+              />
+            </b-col>
+            <b-col sm="3">
+              <b-form-input
+                v-model="appealCalcValues.factor.vi"
+                type="number"
+                step="0.001"
+              />
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col sm="3">
+              効果(%)
+            </b-col>
+            <b-col sm="3">
+              <b-form-input
+                v-model="appealCalcValues.effect.vo"
+                type="number"
+              />
+            </b-col>
+            <b-col sm="3">
+              <b-form-input
+                v-model="appealCalcValues.effect.da"
+                type="number"
+              />
+            </b-col>
+            <b-col sm="3">
+              <b-form-input
+                v-model="appealCalcValues.effect.vi"
+                type="number"
+              />
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col sm="3">
+              パッシブスキル(%)
+            </b-col>
+            <b-col sm="3">
+              <b-form-input
+                v-model="appealCalcValues.passive.vo"
+                type="number"
+              />
+            </b-col>
+            <b-col sm="3">
+              <b-form-input
+                v-model="appealCalcValues.passive.da"
+                type="number"
+              />
+            </b-col>
+            <b-col sm="3">
+              <b-form-input
+                v-model="appealCalcValues.passive.vi"
+                type="number"
+              />
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col sm="3">
+              アイビリティバフ
+            </b-col>
+            <b-col sm="3">
+              {{ abilityBuff }}
+            </b-col>
+            <b-col sm="3">
+              {{ abilityBuff }}
+            </b-col>
+            <b-col sm="3">
+              {{ abilityBuff }}
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col sm="3">
+              審査員に付与された興味値(%)
+            </b-col>
+            <b-col sm="3">
+              <b-form-input
+                v-model="appealCalcValues.interest.vo"
+                type="number"
+              />
+            </b-col>
+            <b-col sm="3">
+              <b-form-input
+                v-model="appealCalcValues.interest.da"
+                type="number"
+              />
+            </b-col>
+            <b-col sm="3">
+              <b-form-input
+                v-model="appealCalcValues.interest.vi"
+                type="number"
+              />
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col sm="3">
+              フェスアピール値
+            </b-col>
+            <b-col sm="3">
+              {{ fesAppeal.vo }}
+            </b-col>
+            <b-col sm="3">
+              {{ fesAppeal.da }}
+            </b-col>
+            <b-col sm="3">
+              {{ fesAppeal.vi }}
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col sm="3">
+              バフ合計値(%)
+            </b-col>
+            <b-col sm="3">
+              {{ totalBuff.vo }}
+            </b-col>
+            <b-col sm="3">
+              {{ totalBuff.da }}
+            </b-col>
+            <b-col sm="3">
+              {{ totalBuff.vi }}
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col sm="3">
+              興味合計値(%)
+            </b-col>
+            <b-col sm="3">
+              {{ totalInterest.vo }}
+            </b-col>
+            <b-col sm="3">
+              {{ totalInterest.da }}
+            </b-col>
+            <b-col sm="3">
+              {{ totalInterest.vi }}
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col sm="3">
+              アピール基礎係数
+            </b-col>
+            <b-col sm="3">
+              {{ baseAppeal.vo }}
+            </b-col>
+            <b-col sm="3">
+              {{ baseAppeal.da }}
+            </b-col>
+            <b-col sm="3">
+              {{ baseAppeal.vi }}
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col sm="3">
+              アピール実数
+            </b-col>
+            <b-col sm="3">
+              {{ voAppeal.total }}<br />
+              {{ voAppeal.label }}
+            </b-col>
+            <b-col sm="3">
+              {{ daAppeal.total }}<br />
+              {{ daAppeal.label }}
+            </b-col>
+            <b-col sm="3">
+              {{ viAppeal.total }}<br />
+              {{ viAppeal.label }}
+            </b-col>
+          </b-row>
+        </b-tab>
+        <!-- 備考タブ -->
+        <b-tab title="備考">
+          <b-row>
+            <b-col>
+              <h2>利用中の計算式</h2>
+              <h3>アピール値算出式</h3>
+              <ul>
+                <li>
+                  フェスアピール基礎値 = 2.0 *
+                  アピールするアイドルの該当ステータス + 0.5 *
+                  (アピールしないアイドルの該当ステータス合計)
+                </li>
+                <li>
+                  基礎係数 = INT(フェスアピール基礎値 * (1 +
+                  該当属性バフ合計値(%)/100 + アビリティバフ合計値(%)/100) *
+                  アピール係数)
+                </li>
+                <li>
+                  フェスアピール値 = INT(INT(基礎係数 * アピール倍率) *
+                  Excellent係数 * (1 + 興味値合計(%)/100))
+                </li>
+                <li>
+                  アピール係数はPerfectなら1.5, Goodなら1.1, Normarlなら1.0,
+                  Badなら0.5
+                </li>
+                <li>
+                  Excellent係数はアピール属性と審査員属性が一致した場合2,
+                  一致しない場合は1
+                </li>
+              </ul>
+              <h3>単独アビリティバフ算出式</h3>
+              <ul>
+                <li>
+                  スタートダッシュ(%): MAX(10 - (8/9 * (現在ターン数 - 1)), 2)
+                </li>
+                <li>
+                  スロースタート(%): MIN(4 + (16/9 * (現在ターン数 - 1)), 20)
+                </li>
+                <li>
+                  アピールアップ(思い出高) (%): 2 + (思い出ゲージ / 100) * 8
+                </li>
+                <li>
+                  アピールアップ(思い出低) (%): 4 + (1 - 思い出ゲージ / 100) *
+                  16
+                </li>
+              </ul>
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col>
+              <h2>参考: 個別フェスアピール基礎値</h2>
+              <b-table
+                :items="appealBaseValues"
+                :fields="appealBaseFields"
+              ></b-table>
+            </b-col>
+          </b-row>
+        </b-tab>
+      </b-tabs>
+    </div>
     <br />
-    <b-row>
-      <b-col>
-        <h2>アビリティ (G.R.A.D.)</h2>
-        <p>
-          ユニット全体で現在有効となっているアビリティの個数を入力してください。
-        </p>
-      </b-col>
-    </b-row>
-    <b-row v-for="item in abilityItems" :key="item.key">
-      <b-col sm="3">
-        <label :for="`ability-${item.key}`">{{ item.label }}</label>
-      </b-col>
-      <b-col sm="1">
-        <p>{{ abilities[item.key] }}</p>
-      </b-col>
-      <b-col sm="8">
-        <b-form-input
-          :id="`ability-${item.key}`"
-          v-model="abilities[item.key]"
-          type="range"
-          :min="item.min"
-          :max="item.max"
-        ></b-form-input>
-      </b-col>
-    </b-row>
-    <br />
-    <b-row>
-      <b-col>
-        <h2>フェスユニット表記</h2>
-        <p>
-          フェスユニット編成の下に表記されている数値と一致するかを確認してください。
-        </p>
-      </b-col>
-    </b-row>
-    <b-row cols="5" class="appeal" align-v="center">
-      <b-col>思い出: {{ unitCalc.memory.label }}</b-col>
-      <b-col>Vo. {{ unitCalc.vo }}</b-col>
-      <b-col>Da. {{ unitCalc.da }}</b-col>
-      <b-col>Vi. {{ unitCalc.vi }}</b-col>
-      <b-col>メンタル. {{ unitCalc.me }}</b-col>
-    </b-row>
-    <br />
-    <b-row>
-      <b-col>
-        <h2>実アピール値算出</h2>
-        <p>
-          以下にアピール時の状況を入力することで実際のアピール値を算出します。
-        </p>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col sm="2">
-        現在のターン数
-      </b-col>
-      <b-col sm="1">
-        {{ appealCalcValues.turn }}
-      </b-col>
-      <b-col sm="9">
-        <b-form-input
-          v-model="appealCalcValues.turn"
-          type="range"
-          min="1"
-          max="20"
-        ></b-form-input>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col sm="3">
-        思い出ゲージ(%)
-      </b-col>
-      <b-col sm="9">
-        <b-form-input
-          v-model="appealCalcValues.memory"
-          type="number"
-          step="0.001"
-        />
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col sm="3">
-        アピール評価係数
-      </b-col>
-      <b-col sm="9">
-        <b-form-select
-          v-model="appealCalcValues.action"
-          :options="appealActionOptions"
-        ></b-form-select>
-      </b-col>
-    </b-row>
-
-    <b-row>
-      <b-col sm="3">
-        <label for="appealPosition">アピール実施ポジション</label>
-      </b-col>
-      <b-col sm="9">
-        <b-form-select
-          id="appealPosition"
-          v-model="appealCalcValues.position"
-          :options="appealPositionOptions"
-          @change="positionChoosed"
-        ></b-form-select>
-      </b-col>
-    </b-row>
-
-    <b-row>
-      <b-col sm="3"> </b-col>
-      <b-col sm="3">
-        Vo.情報
-      </b-col>
-      <b-col sm="3">
-        Da.情報
-      </b-col>
-      <b-col sm="3">
-        Vi.情報
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col sm="3">
-        アピール倍率(利用しない場合は0)
-      </b-col>
-      <b-col sm="3">
-        <b-form-input
-          v-model="appealCalcValues.factor.vo"
-          type="number"
-          step="0.001"
-        />
-      </b-col>
-      <b-col sm="3">
-        <b-form-input
-          v-model="appealCalcValues.factor.da"
-          type="number"
-          step="0.001"
-        />
-      </b-col>
-      <b-col sm="3">
-        <b-form-input
-          v-model="appealCalcValues.factor.vi"
-          type="number"
-          step="0.001"
-        />
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col sm="3">
-        効果(%)
-      </b-col>
-      <b-col sm="3">
-        <b-form-input v-model="appealCalcValues.effect.vo" type="number" />
-      </b-col>
-      <b-col sm="3">
-        <b-form-input v-model="appealCalcValues.effect.da" type="number" />
-      </b-col>
-      <b-col sm="3">
-        <b-form-input v-model="appealCalcValues.effect.vi" type="number" />
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col sm="3">
-        パッシブスキル(%)
-      </b-col>
-      <b-col sm="3">
-        <b-form-input v-model="appealCalcValues.passive.vo" type="number" />
-      </b-col>
-      <b-col sm="3">
-        <b-form-input v-model="appealCalcValues.passive.da" type="number" />
-      </b-col>
-      <b-col sm="3">
-        <b-form-input v-model="appealCalcValues.passive.vi" type="number" />
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col sm="3">
-        アイビリティバフ
-      </b-col>
-      <b-col sm="3">
-        {{ abilityBuff }}
-      </b-col>
-      <b-col sm="3">
-        {{ abilityBuff }}
-      </b-col>
-      <b-col sm="3">
-        {{ abilityBuff }}
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col sm="3">
-        審査員に付与された興味値(%)
-      </b-col>
-      <b-col sm="3">
-        <b-form-input v-model="appealCalcValues.interest.vo" type="number" />
-      </b-col>
-      <b-col sm="3">
-        <b-form-input v-model="appealCalcValues.interest.da" type="number" />
-      </b-col>
-      <b-col sm="3">
-        <b-form-input v-model="appealCalcValues.interest.vi" type="number" />
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col sm="3">
-        フェスアピール値
-      </b-col>
-      <b-col sm="3">
-        {{ fesAppeal.vo }}
-      </b-col>
-      <b-col sm="3">
-        {{ fesAppeal.da }}
-      </b-col>
-      <b-col sm="3">
-        {{ fesAppeal.vi }}
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col sm="3">
-        バフ合計値(%)
-      </b-col>
-      <b-col sm="3">
-        {{ totalBuff.vo }}
-      </b-col>
-      <b-col sm="3">
-        {{ totalBuff.da }}
-      </b-col>
-      <b-col sm="3">
-        {{ totalBuff.vi }}
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col sm="3">
-        興味合計値(%)
-      </b-col>
-      <b-col sm="3">
-        {{ totalInterest.vo }}
-      </b-col>
-      <b-col sm="3">
-        {{ totalInterest.da }}
-      </b-col>
-      <b-col sm="3">
-        {{ totalInterest.vi }}
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col sm="3">
-        アピール基礎係数
-      </b-col>
-      <b-col sm="3">
-        {{ baseAppeal.vo }}
-      </b-col>
-      <b-col sm="3">
-        {{ baseAppeal.da }}
-      </b-col>
-      <b-col sm="3">
-        {{ baseAppeal.vi }}
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col sm="3">
-        アピール実数
-      </b-col>
-      <b-col sm="3">
-        {{ voAppeal.total }}<br />
-        {{ voAppeal.label }}
-      </b-col>
-      <b-col sm="3">
-        {{ daAppeal.total }}<br />
-        {{ daAppeal.label }}
-      </b-col>
-      <b-col sm="3">
-        {{ viAppeal.total }}<br />
-        {{ viAppeal.label }}
-      </b-col>
-    </b-row>
-
-    <br />
-    <b-row>
-      <b-col>
-        <h2>参考: 個別フェスアピール基礎値</h2>
-        <b-table :items="appealBaseValues" :fields="appealBaseFields"></b-table>
-      </b-col>
-    </b-row>
     <b-row>
       <b-col>
         <p>
@@ -446,7 +641,8 @@ export default {
         appealUpByHighMemory: 4, // アピールUP (思い出高)
         appealUpByLowMemory: 4, // アピールUP (思い出低)
         interest: 3, // 興味
-        perfectly: 0 // パーフェクトリィ
+        perfectly: 0, // パーフェクトリィ
+        memoryUp: 25 // 思い出UP
       }
     };
   },
@@ -481,7 +677,8 @@ export default {
         appealUpByHighMemory: 0, // アピールUP (思い出高)
         appealUpByLowMemory: 0, // アピールUP (思い出低)
         interest: 0, // 興味
-        perfectly: 0 // パーフェクトリィ
+        perfectly: 0, // パーフェクトリィ
+        memoryUp: 25 // 思い出UP
       },
       abilityItems: [
         { key: "bond", label: "アイドルの絆の個数", min: 0, max: 20 },
@@ -500,7 +697,13 @@ export default {
           max: 5
         },
         { key: "interest", label: "興味UP合計値(%)", min: -15, max: 15 },
-        { key: "perfectly", label: "パーフェクトリィ", min: 0, max: 5 }
+        { key: "perfectly", label: "パーフェクトリィ", min: 0, max: 5 },
+        {
+          key: "memoryUp",
+          label: "思い出ゲージ増加量合計(%)",
+          min: -50,
+          max: 25
+        }
       ],
       idx: {
         vo: 0,
@@ -513,6 +716,7 @@ export default {
         action: "1.5",
         turn: 1,
         memory: 10,
+        extraMemoryUp: 0,
         mental: 1,
         factor: {
           // アピール倍率
@@ -648,19 +852,11 @@ export default {
         this.abilities.appealUpByLowMemory * ((1 - memory / 100) * 16 + 4);
       const turnFactor = this.appealCalcValues.turn - 1;
       const startDash =
-        this.abilities.startDash * Math.max(2, 10 - 0.895 * turnFactor);
+        this.abilities.startDash * Math.max(2, 10 - (8 / 9) * turnFactor);
       const slowStart =
-        this.abilities.slowStarter * Math.min(20, 4 + 1.79 * turnFactor);
+        this.abilities.slowStarter *
+        Math.min(20, 4 + ((2 * 8) / 9) * turnFactor);
       const perfectly = this.abilities.perfectly * 10;
-      console.log({
-        memory,
-        bond,
-        highMemory,
-        lowMemory,
-        startDash,
-        slowStart,
-        perfectly
-      });
       return this.sum([
         bond,
         highMemory,
@@ -706,13 +902,13 @@ export default {
       const action = Number(this.appealCalcValues.action); // Perfect とか
       const appealFactor = this.appealCalcValues.factor; // 何倍アピールか
       const vo = Math.floor(
-        fes.vo * (1 + buff.vo / 100) * appealFactor.vo * action
+        Math.floor(fes.vo * (1 + buff.vo / 100) * appealFactor.vo) * action
       );
       const da = Math.floor(
-        fes.da * (1 + buff.da / 100) * appealFactor.da * action
+        Math.floor(fes.da * (1 + buff.da / 100) * appealFactor.da) * action
       );
       const vi = Math.floor(
-        fes.vi * (1 + buff.vi / 100) * appealFactor.vi * action
+        Math.floor(fes.vi * (1 + buff.vi / 100) * appealFactor.vi) * action
       );
       return { vo, da, vi };
     },
@@ -805,16 +1001,75 @@ export default {
       }
       return ts.join(", ");
     },
-    appealRowClass(item, type) {}
+    firstTurn() {
+      // ターンの初期化
+      this.appealCalcValues.mental = Number(this.unitCalc.me);
+      this.appealCalcValues.turn = 1;
+      this.appealCalcValues.memory = 0;
+      this.appealCalcValues.extraMemoryUp = 0;
+    },
+    calcNextTurn() {
+      // 次ターンの計算
+      // メンタルの割合によって増加量を決定
+      const maxMental = Number(this.unitCalc.me);
+      const mental = Number(this.appealCalcValues.mental);
+      const memoryByMental = (max, curr) => {
+        const per = Math.floor((curr / max) * 100);
+        if (per >= 100) {
+          return 10;
+        } else if (per >= 75) {
+          return 15;
+        } else if (per >= 50) {
+          return 17.5;
+        } else if (per >= 25) {
+          return 20;
+        } else if (per >= 5) {
+          return 22.5;
+        } else {
+          return 100;
+        }
+      };
+      // 合計増加量
+      const totalUp =
+        Number(1 + this.abilities.memoryUp / 100) *
+        (Number(this.appealCalcValues.extraMemoryUp) +
+          memoryByMental(maxMental, mental));
+      // ターン計算
+      this.appealCalcValues.turn = Number(this.appealCalcValues.turn) + 1;
+      this.appealCalcValues.memory = Math.min(
+        100,
+        Number(this.appealCalcValues.memory) + totalUp
+      );
+      this.appealCalcValues.extraMemoryUp = 0;
+    }
   }
 };
 </script>
 
 <style>
+h1 {
+  font-size: 1.4em;
+}
+h2 {
+  font-size: 1.2em;
+}
+h3 {
+  font-size: 1.1em;
+}
 .appeal {
   height: 3em;
 }
+.header {
+  min-height: 50px;
+}
 .vo {
   background-color: #fe7bde;
+}
+
+@media screen and (max-width: 800px) {
+  .cell-input {
+    padding-left: 2px;
+    padding-right: 2px;
+  }
 }
 </style>
