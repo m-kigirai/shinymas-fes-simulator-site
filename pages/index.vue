@@ -568,6 +568,17 @@
               />
             </b-col>
           </b-row>
+          <b-row>
+            <b-col>
+              <b-button
+                variant="outline-primary"
+                class="float-right"
+                @click="clearAppealCalc"
+              >
+                入力をクリア
+              </b-button>
+            </b-col>
+          </b-row>
           <br />
           <b-row>
             <b-col>
@@ -1093,8 +1104,8 @@ export default {
       const base = this.baseAppeal;
       const interest = this.totalInterest;
       const vo = Math.floor(Math.floor(base.vo) * 2 * (1 + interest.vo / 100));
-      const da = Math.floor(Math.floor(base.da) * (1 + interest.da / 100));
-      const vi = Math.floor(Math.floor(base.vi) * (1 + interest.vi / 100));
+      const da = Math.floor(Math.floor(base.da) * (1 + interest.vo / 100));
+      const vi = Math.floor(Math.floor(base.vi) * (1 + interest.vo / 100));
       return {
         vo,
         da,
@@ -1106,9 +1117,9 @@ export default {
     daAppeal() {
       const base = this.baseAppeal;
       const interest = this.totalInterest;
-      const vo = Math.floor(Math.floor(base.vo) * (1 + interest.vo / 100));
+      const vo = Math.floor(Math.floor(base.vo) * (1 + interest.da / 100));
       const da = Math.floor(Math.floor(base.da) * 2 * (1 + interest.da / 100));
-      const vi = Math.floor(Math.floor(base.vi) * (1 + interest.vi / 100));
+      const vi = Math.floor(Math.floor(base.vi) * (1 + interest.da / 100));
       return {
         vo,
         da,
@@ -1120,8 +1131,8 @@ export default {
     viAppeal() {
       const base = this.baseAppeal;
       const interest = this.totalInterest;
-      const vo = Math.floor(Math.floor(base.vo) * (1 + interest.vo / 100));
-      const da = Math.floor(Math.floor(base.da) * (1 + interest.da / 100));
+      const vo = Math.floor(Math.floor(base.vo) * (1 + interest.vi / 100));
+      const da = Math.floor(Math.floor(base.da) * (1 + interest.vi / 100));
       const vi = Math.floor(Math.floor(base.vi) * 2 * (1 + interest.vi / 100));
       return {
         vo,
@@ -1218,6 +1229,13 @@ export default {
         Number(this.appealCalcValues.memory) + totalUp
       );
       this.appealCalcValues.extraMemoryUp = 0;
+    },
+    clearAppealCalc() {
+      // 入力値クリア
+      this.$set(this.appealCalcValues, "factor", { vo: 0, da: 0, vi: 0 });
+      this.$set(this.appealCalcValues, "effect", { vo: 0, da: 0, vi: 0 });
+      this.$set(this.appealCalcValues, "passive", { vo: 0, da: 0, vi: 0 });
+      this.$set(this.appealCalcValues, "interest", { vo: 0, da: 0, vi: 0 });
     },
     loadUnit() {
       // ユニットをロード
