@@ -1,5 +1,5 @@
 <template>
-  <b-container fluid>
+  <b-container>
     <b-row>
       <b-col>
         <h1>
@@ -18,19 +18,57 @@
         <b-tab title="ユニット情報入力" active>
           <b-row>
             <b-col>
+              <h2>保存されたユニットデータ</h2>
+            </b-col>
+          </b-row>
+          <b-row class="justify-content-md-center text-center">
+            <b-col sm="6">
+              <b-form-select
+                v-model="selectedReadUnitIndex"
+                :options="savedataReadOptions"
+              ></b-form-select>
+            </b-col>
+            <b-col sm="4">
+              <b-button variant="outline-success" @click="loadUnit">
+                選択中のデータを読み込む
+              </b-button>
+            </b-col>
+          </b-row>
+          <br />
+          <b-row>
+            <b-col>
               <h2>フェスユニットアピール値</h2>
               <p>
                 フェスユニット編成で表示されているままの数字を入力してください。
               </p>
             </b-col>
           </b-row>
-
+          <b-row cols="5" class="appeal text-center" align-v="center">
+            <b-col class="">
+              <span class="bold">Position</span>
+            </b-col>
+            <b-col class="vo h-100" align-v="center">
+              <span class="bold">Vo.</span>
+            </b-col>
+            <b-col class="da h-100" align-v="center">
+              <span class="bold">Da.</span>
+            </b-col>
+            <b-col class="vi h-100" align-v="center">
+              <span class="bold">Vi.</span>
+            </b-col>
+            <b-col class="me h-100" align-v="center">
+              <span class="bold">メンタル</span>
+            </b-col>
+          </b-row>
           <b-row cols="5" class="appeal" align-v="center">
-            <b-col>Leader</b-col>
+            <b-col class="text-center">
+              <span class="bold">Leader</span>
+            </b-col>
             <b-col
               v-for="(_, index) in unit.leader.appeals"
               :key="index"
-              class="cell-input"
+              class="cell-input h-100"
+              :class="appealClassIdx[index]"
             >
               <b-form-input
                 v-model="unit.leader.appeals[index]"
@@ -40,22 +78,28 @@
           </b-row>
 
           <b-row cols="5" class="appeal" align-v="center">
-            <b-col>Vocal担当</b-col>
+            <b-col class="text-center">
+              <span class="bold">Vocal</span>
+            </b-col>
             <b-col
               v-for="(_, index) in unit.vocal.appeals"
               :key="index"
-              class="cell-input"
+              class="cell-input h-100"
+              :class="appealClassIdx[index]"
             >
               <b-form-input v-model="unit.vocal.appeals[index]" type="number" />
             </b-col>
           </b-row>
 
           <b-row cols="5" class="appeal" align-v="center">
-            <b-col>Center</b-col>
+            <b-col class="text-center">
+              <span class="bold">Center</span>
+            </b-col>
             <b-col
               v-for="(_, index) in unit.center.appeals"
               :key="index"
-              class="cell-input"
+              class="cell-input h-100"
+              :class="appealClassIdx[index]"
             >
               <b-form-input
                 v-model="unit.center.appeals[index]"
@@ -65,26 +109,43 @@
           </b-row>
 
           <b-row cols="5" class="appeal" align-v="center">
-            <b-col>Dance担当</b-col>
+            <b-col class="text-center">
+              <span class="bold">Dance</span>
+            </b-col>
             <b-col
               v-for="(_, index) in unit.dance.appeals"
               :key="index"
-              class="cell-input"
+              class="cell-input h-100"
+              :class="appealClassIdx[index]"
             >
               <b-form-input v-model="unit.dance.appeals[index]" type="number" />
             </b-col>
           </b-row>
 
           <b-row cols="5" class="appeal" align-v="center">
-            <b-col>Visual担当</b-col>
+            <b-col class="text-center">
+              <span class="bold">Visual</span>
+            </b-col>
             <b-col
               v-for="(_, index) in unit.visual.appeals"
               :key="index"
-              class="cell-input"
+              class="cell-input h-100"
+              :class="appealClassIdx[index]"
             >
               <b-form-input
                 v-model="unit.visual.appeals[index]"
                 type="number"
+              />
+            </b-col>
+          </b-row>
+          <br />
+          <b-row>
+            <b-col sm="2">入力数値の具体例</b-col>
+            <b-col sm="10">
+              <img
+                src="/images/unit-appeal-example.jpg"
+                class="img-fluid"
+                alt="入力数値の元"
               />
             </b-col>
           </b-row>
@@ -95,10 +156,10 @@
             </b-col>
           </b-row>
           <b-row>
-            <b-col sm="3">
-              Leader
+            <b-col sm="3" class="cell-center">
+              <span class="bold">Leader</span>
             </b-col>
-            <b-col sm="1">
+            <b-col sm="1" class="cell-center">
               <p>Lv. {{ unit.leader.memory }}</p>
             </b-col>
             <b-col sm="8">
@@ -111,10 +172,10 @@
             </b-col>
           </b-row>
           <b-row>
-            <b-col sm="3">
-              Vocal担当
+            <b-col sm="3" class="cell-center">
+              <span class="bold">Vocal</span>
             </b-col>
-            <b-col sm="1">
+            <b-col sm="1" class="cell-center">
               <p>Lv. {{ unit.vocal.memory }}</p>
             </b-col>
             <b-col sm="8">
@@ -127,10 +188,10 @@
             </b-col>
           </b-row>
           <b-row>
-            <b-col sm="3">
-              Center
+            <b-col sm="3" class="cell-center">
+              <span class="bold">Center</span>
             </b-col>
-            <b-col sm="1">
+            <b-col sm="1" class="cell-center">
               <p>Lv. {{ unit.center.memory }}</p>
             </b-col>
             <b-col sm="8">
@@ -143,10 +204,10 @@
             </b-col>
           </b-row>
           <b-row>
-            <b-col sm="3">
-              Dance担当
+            <b-col sm="3" class="cell-center">
+              <span class="bold">Dance</span>
             </b-col>
-            <b-col sm="1">
+            <b-col sm="1" class="cell-center">
               <p>Lv. {{ unit.dance.memory }}</p>
             </b-col>
             <b-col sm="8">
@@ -159,10 +220,10 @@
             </b-col>
           </b-row>
           <b-row>
-            <b-col sm="3">
-              Visual担当
+            <b-col sm="3" class="cell-center">
+              <span class="bold">Visual</span>
             </b-col>
-            <b-col sm="1">
+            <b-col sm="1" class="cell-center">
               <p>Lv. {{ unit.visual.memory }}</p>
             </b-col>
             <b-col sm="8">
@@ -184,13 +245,38 @@
             </b-col>
           </b-row>
           <b-row align-v="center">
-            <b-col> 思い出: {{ unitCalc.memory.label }} </b-col>
+            <b-col>
+              <span class="bold"> 思い出: {{ unitCalc.memory.label }} </span>
+            </b-col>
           </b-row>
           <b-row cols="4" class="appeal" align-v="center">
-            <b-col>Vo. {{ unitCalc.vo }}</b-col>
-            <b-col>Da. {{ unitCalc.da }}</b-col>
-            <b-col>Vi. {{ unitCalc.vi }}</b-col>
-            <b-col>Me. {{ unitCalc.me }}</b-col>
+            <b-col class="vo cell-center">
+              <span class="bold">Vo.</span><br />
+              <span class="bold">{{ unitCalc.vo }}</span>
+            </b-col>
+            <b-col class="da cell-center">
+              <span class="bold">Da.</span><br />
+              <span class="bold">{{ unitCalc.da }}</span>
+            </b-col>
+            <b-col class="vi cell-center">
+              <span class="bold">Vi.</span><br />
+              <span class="bold">{{ unitCalc.vi }}</span>
+            </b-col>
+            <b-col class="me cell-center">
+              <span class="bold">Me.</span><br />
+              <span class="bold">{{ unitCalc.me }}</span>
+            </b-col>
+          </b-row>
+          <br />
+          <b-row>
+            <b-col sm="2">具体例</b-col>
+            <b-col sm="10">
+              <img
+                src="/images/unit-total-example.jpg"
+                class="img-fluid"
+                alt="ユニット評価値の具体例"
+              />
+            </b-col>
           </b-row>
           <br />
           <b-row>
@@ -202,11 +288,13 @@
             </b-col>
           </b-row>
           <b-row v-for="item in abilityItems" :key="item.key">
-            <b-col sm="3">
-              <label :for="`ability-${item.key}`">{{ item.label }}</label>
+            <b-col sm="3" class="cell-center">
+              <span class="bold">{{ item.label }}</span>
             </b-col>
-            <b-col sm="1">
-              <p>{{ abilities[item.key] }}</p>
+            <b-col sm="1" class="cell-center">
+              <span class="bold">
+                {{ abilities[item.key] }} {{ item.unit }}
+              </span>
             </b-col>
             <b-col sm="8">
               <b-form-input
@@ -218,12 +306,38 @@
               ></b-form-input>
             </b-col>
           </b-row>
-          <b-row>
-            <b-col>
-              <!-- save -->
+          <br />
+          <b-row class="justify-content-md-center text-center">
+            <b-col sm="2">
+              セーブスロットの選択
+            </b-col>
+            <b-col sm="4">
+              <b-form-select
+                v-model="selectedWriteUnitIndex"
+                :options="savedataWriteOptions"
+              ></b-form-select>
+            </b-col>
+            <b-col sm="4">
+              <b-input v-model="unit.name" placeholder="保存用の名前を入力" />
+            </b-col>
+            <b-col sm="2">
+              <b-button variant="outline-success" @click="saveUnit">
+                名前を付けて保存
+              </b-button>
             </b-col>
           </b-row>
-          <br />
+          <b-row>
+            <b-col>
+              <ul>
+                <li>
+                  情報はLocalStorageに保存されるため、別のブラウザには引き継げません。
+                </li>
+                <li>
+                  キャッシュなどの削除によって消去される場合があります。
+                </li>
+              </ul>
+            </b-col>
+          </b-row>
         </b-tab>
         <b-tab title="アピール値計算">
           <b-row>
@@ -235,10 +349,33 @@
             </b-col>
           </b-row>
           <b-row>
-            <b-col sm="2">
-              現在のターン数
+            <b-col sm="3">
+              <span class="bold">開始時のテンション</span>
             </b-col>
-            <b-col sm="1">
+            <b-col sm="9">
+              <b-form-select
+                v-model="tention"
+                :options="tentionOptions"
+              ></b-form-select>
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col>
+              <b-button
+                variant="outline-primary"
+                class="float-right"
+                @click="firstTurn"
+              >
+                ターンの初期化
+              </b-button>
+            </b-col>
+          </b-row>
+          <br />
+          <b-row>
+            <b-col sm="2">
+              <span class="bold">現在のターン数</span>
+            </b-col>
+            <b-col sm="1" class="cell-center">
               {{ appealCalcValues.turn }}
             </b-col>
             <b-col sm="9">
@@ -252,7 +389,7 @@
           </b-row>
           <b-row>
             <b-col sm="3">
-              思い出ゲージ(%)
+              <span class="bold">思い出ゲージ(%)</span>
             </b-col>
             <b-col sm="9">
               <b-form-input
@@ -264,7 +401,9 @@
           </b-row>
           <b-row>
             <b-col sm="3">
-              ターン開始時メンタル
+              <span class="bold">
+                ターン開始時メンタル
+              </span>
             </b-col>
             <b-col sm="9">
               <b-form-input v-model="appealCalcValues.mental" type="number" />
@@ -272,7 +411,9 @@
           </b-row>
           <b-row>
             <b-col sm="3">
-              アピール・スキルによる思い出ゲージ上昇量
+              <span class="bold">
+                アピール・スキルによる思い出ゲージ上昇
+              </span>
             </b-col>
             <b-col sm="9">
               <b-form-input
@@ -282,8 +423,7 @@
             </b-col>
           </b-row>
           <b-row>
-            <b-col sm="6"></b-col>
-            <b-col sm="6">
+            <b-col>
               <b-button
                 variant="outline-success"
                 class="float-right"
@@ -291,18 +431,12 @@
               >
                 次ターンへ (思い出自動計算)
               </b-button>
-              <b-button
-                variant="outline-primary"
-                class="float-right"
-                @click="firstTurn"
-              >
-                ターンの初期化
-              </b-button>
             </b-col>
           </b-row>
+          <br />
           <b-row>
             <b-col sm="3">
-              アピール係数
+              <span class="bold">アピール係数</span>
             </b-col>
             <b-col sm="9">
               <b-form-select
@@ -311,10 +445,11 @@
               ></b-form-select>
             </b-col>
           </b-row>
-
           <b-row>
             <b-col sm="3">
-              <label for="appealPosition">アピール実施ポジション</label>
+              <span class="bold">
+                アピールポジション
+              </span>
             </b-col>
             <b-col sm="9">
               <b-form-select
@@ -325,38 +460,38 @@
               ></b-form-select>
             </b-col>
           </b-row>
-
-          <b-row>
-            <b-col sm="3"> </b-col>
-            <b-col sm="3">
-              Vo.情報
+          <br />
+          <b-row cols="4">
+            <b-col> </b-col>
+            <b-col class="vo cell-center">
+              <span class="bold">Vo.</span>
             </b-col>
-            <b-col sm="3">
-              Da.情報
+            <b-col class="da cell-center">
+              <span class="bold">Da.</span>
             </b-col>
-            <b-col sm="3">
-              Vi.情報
+            <b-col class="vi cell-center">
+              <span class="bold">Vi.</span>
             </b-col>
           </b-row>
-          <b-row>
-            <b-col sm="3">
-              アピール倍率(利用しない場合は0)
+          <b-row cols="4">
+            <b-col class="cell-col">
+              <span class="bold">アピール倍率</span>
             </b-col>
-            <b-col sm="3">
+            <b-col class="vo">
               <b-form-input
                 v-model="appealCalcValues.factor.vo"
                 type="number"
                 step="0.001"
               />
             </b-col>
-            <b-col sm="3">
+            <b-col class="da">
               <b-form-input
                 v-model="appealCalcValues.factor.da"
                 type="number"
                 step="0.001"
               />
             </b-col>
-            <b-col sm="3">
+            <b-col class="vi">
               <b-form-input
                 v-model="appealCalcValues.factor.vi"
                 type="number"
@@ -364,46 +499,46 @@
               />
             </b-col>
           </b-row>
-          <b-row>
-            <b-col sm="3">
-              効果(%)
+          <b-row cols="4">
+            <b-col class="cell-col">
+              <span class="bold">効果(アイコン, %)</span>
             </b-col>
-            <b-col sm="3">
+            <b-col class="vo">
               <b-form-input
                 v-model="appealCalcValues.effect.vo"
                 type="number"
               />
             </b-col>
-            <b-col sm="3">
+            <b-col class="da">
               <b-form-input
                 v-model="appealCalcValues.effect.da"
                 type="number"
               />
             </b-col>
-            <b-col sm="3">
+            <b-col class="vi">
               <b-form-input
                 v-model="appealCalcValues.effect.vi"
                 type="number"
               />
             </b-col>
           </b-row>
-          <b-row>
-            <b-col sm="3">
-              パッシブスキル(%)
+          <b-row cols="4">
+            <b-col class="cell-col">
+              <span class="bold">パッシブスキル(%)</span>
             </b-col>
-            <b-col sm="3">
+            <b-col class="vo">
               <b-form-input
                 v-model="appealCalcValues.passive.vo"
                 type="number"
               />
             </b-col>
-            <b-col sm="3">
+            <b-col class="da">
               <b-form-input
                 v-model="appealCalcValues.passive.da"
                 type="number"
               />
             </b-col>
-            <b-col sm="3">
+            <b-col class="vi">
               <b-form-input
                 v-model="appealCalcValues.passive.vi"
                 type="number"
@@ -411,115 +546,140 @@
             </b-col>
           </b-row>
           <b-row>
-            <b-col sm="3">
-              アイビリティバフ
+            <b-col class="cell-col">
+              <span class="bold">審査員興味値(%)</span>
             </b-col>
-            <b-col sm="3">
-              {{ abilityBuff }}
-            </b-col>
-            <b-col sm="3">
-              {{ abilityBuff }}
-            </b-col>
-            <b-col sm="3">
-              {{ abilityBuff }}
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col sm="3">
-              審査員に付与された興味値(%)
-            </b-col>
-            <b-col sm="3">
+            <b-col class="vo">
               <b-form-input
                 v-model="appealCalcValues.interest.vo"
                 type="number"
               />
             </b-col>
-            <b-col sm="3">
+            <b-col class="da">
               <b-form-input
                 v-model="appealCalcValues.interest.da"
                 type="number"
               />
             </b-col>
-            <b-col sm="3">
+            <b-col class="vi">
               <b-form-input
                 v-model="appealCalcValues.interest.vi"
                 type="number"
               />
             </b-col>
           </b-row>
+          <br />
           <b-row>
-            <b-col sm="3">
-              フェスアピール値
-            </b-col>
-            <b-col sm="3">
-              {{ fesAppeal.vo }}
-            </b-col>
-            <b-col sm="3">
-              {{ fesAppeal.da }}
-            </b-col>
-            <b-col sm="3">
-              {{ fesAppeal.vi }}
+            <b-col>
+              <h2>アピールシミュレーション結果</h2>
             </b-col>
           </b-row>
-          <b-row>
-            <b-col sm="3">
-              バフ合計値(%)
+          <b-row cols="4">
+            <b-col> </b-col>
+            <b-col class="vo cell-center">
+              <span class="bold">Vo.</span>
             </b-col>
-            <b-col sm="3">
-              {{ totalBuff.vo }}
+            <b-col class="da cell-center">
+              <span class="bold">Da.</span>
             </b-col>
-            <b-col sm="3">
-              {{ totalBuff.da }}
-            </b-col>
-            <b-col sm="3">
-              {{ totalBuff.vi }}
+            <b-col class="vi cell-center">
+              <span class="bold">Vi.</span>
             </b-col>
           </b-row>
-          <b-row>
-            <b-col sm="3">
-              興味合計値(%)
+          <b-row cols="4">
+            <b-col class="cell-col">
+              <span class="bold">各審査員へのアピール</span>
             </b-col>
-            <b-col sm="3">
-              {{ totalInterest.vo }}
+            <b-col class="vo cell-center">
+              <span class="bold">{{ voAppeal.total }}</span>
+              <div v-if="voAppeal.label">(内訳: {{ voAppeal.label }})</div>
             </b-col>
-            <b-col sm="3">
-              {{ totalInterest.da }}
+            <b-col class="da cell-center">
+              <span class="bold">{{ daAppeal.total }}</span>
+              <div v-if="daAppeal.label">(内訳: {{ daAppeal.label }})</div>
             </b-col>
-            <b-col sm="3">
-              {{ totalInterest.vi }}
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col sm="3">
-              アピール基礎係数
-            </b-col>
-            <b-col sm="3">
-              {{ baseAppeal.vo }}
-            </b-col>
-            <b-col sm="3">
-              {{ baseAppeal.da }}
-            </b-col>
-            <b-col sm="3">
-              {{ baseAppeal.vi }}
+            <b-col class="vi cell-center">
+              <span class="bold">{{ viAppeal.total }}</span>
+              <div v-if="viAppeal.label">(内訳: {{ viAppeal.label }})</div>
             </b-col>
           </b-row>
+          <br />
           <b-row>
-            <b-col sm="3">
-              アピール実数
-            </b-col>
-            <b-col sm="3">
-              {{ voAppeal.total }}<br />
-              {{ voAppeal.label }}
-            </b-col>
-            <b-col sm="3">
-              {{ daAppeal.total }}<br />
-              {{ daAppeal.label }}
-            </b-col>
-            <b-col sm="3">
-              {{ viAppeal.total }}<br />
-              {{ viAppeal.label }}
+            <b-col>
+              <h3>その他シミュレーション結果</h3>
             </b-col>
           </b-row>
+          <b-row cols="4">
+            <b-col class="cell-col">
+              <span class="bold">フェスアピール値</span>
+            </b-col>
+            <b-col class="vo text-center">
+              <span class="bold">{{ fesAppeal.vo }}</span>
+            </b-col>
+            <b-col class="da text-center">
+              <span class="bold">{{ fesAppeal.da }}</span>
+            </b-col>
+            <b-col class="vi text-center">
+              <span class="bold">{{ fesAppeal.vi }}</span>
+            </b-col>
+          </b-row>
+          <b-row cols="4">
+            <b-col class="cell-col">
+              <span class="bold">アビリティバフ</span>
+            </b-col>
+            <b-col class="vo text-center">
+              <span class="bold">{{ abilityBuff }}</span>
+            </b-col>
+            <b-col class="da text-center">
+              <span class="bold">{{ abilityBuff }}</span>
+            </b-col>
+            <b-col class="vi text-center">
+              <span class="bold">{{ abilityBuff }}</span>
+            </b-col>
+          </b-row>
+          <b-row cols="4">
+            <b-col class="cell-col">
+              <span class="bold">バフ合計値(%)</span>
+            </b-col>
+            <b-col class="vo text-center">
+              <span class="bold">{{ totalBuff.vo }}</span>
+            </b-col>
+            <b-col class="da text-center">
+              <span class="bold">{{ totalBuff.da }}</span>
+            </b-col>
+            <b-col class="vi text-center">
+              <span class="bold">{{ totalBuff.vi }}</span>
+            </b-col>
+          </b-row>
+          <b-row cols="4">
+            <b-col class="cell-col">
+              <span class="bold">興味合計値(%)</span>
+            </b-col>
+            <b-col class="vo text-center">
+              <span class="bold">{{ totalInterest.vo }}</span>
+            </b-col>
+            <b-col class="da text-center">
+              <span class="bold">{{ totalInterest.da }}</span>
+            </b-col>
+            <b-col class="vi text-center">
+              <span class="bold">{{ totalInterest.vi }}</span>
+            </b-col>
+          </b-row>
+          <b-row cols="4">
+            <b-col class="cell-col">
+              <span class="bold">アピール基礎係数</span>
+            </b-col>
+            <b-col class="vo text-center">
+              <span class="bold">{{ baseAppeal.vo }}</span>
+            </b-col>
+            <b-col class="da text-center">
+              <span class="bold">{{ baseAppeal.da }}</span>
+            </b-col>
+            <b-col class="vi text-center">
+              <span class="bold">{{ baseAppeal.vi }}</span>
+            </b-col>
+          </b-row>
+          <br />
         </b-tab>
         <!-- 備考タブ -->
         <b-tab title="備考">
@@ -569,15 +729,6 @@
               </ul>
             </b-col>
           </b-row>
-          <b-row>
-            <b-col>
-              <h2>参考: 個別フェスアピール基礎値</h2>
-              <b-table
-                :items="appealBaseValues"
-                :fields="appealBaseFields"
-              ></b-table>
-            </b-col>
-          </b-row>
         </b-tab>
       </b-tabs>
     </div>
@@ -594,12 +745,12 @@
           当該サービスの提供元に帰属します。
         </p>
         <p>
-          コンタクトは
+          コンタクト(バグ報告, 改善要望, サービス提供元からの画像削除依頼など)は
           <a
             href="https://github.com/m-kigirai/shinymas-fes-simulator-site"
             target="_blank"
           >
-            こちらから
+            こちらから。
           </a>
         </p>
       </b-col>
@@ -610,45 +761,12 @@
 <script>
 export default {
   components: {},
-  asyncData() {
-    return {
-      unit: {
-        leader: {
-          appeals: [600, 600, 338, 1100],
-          memory: 4
-        },
-        vocal: {
-          appeals: [1622, 514, 302, 560],
-          memory: 2
-        },
-        center: {
-          appeals: [709, 1573, 504, 600],
-          memory: 5
-        },
-        dance: {
-          appeals: [411, 1923, 427, 600],
-          memory: 2
-        },
-        visual: {
-          appeals: [602, 406, 1690, 474],
-          memory: 5
-        }
-      },
-      abilities: {
-        bond: 9, // 有効な絆の個数
-        startDash: 4,
-        slowStarter: 4,
-        appealUpByHighMemory: 4, // アピールUP (思い出高)
-        appealUpByLowMemory: 4, // アピールUP (思い出低)
-        interest: 3, // 興味
-        perfectly: 0, // パーフェクトリィ
-        memoryUp: 25 // 思い出UP
-      }
-    };
-  },
   data() {
     return {
+      selectedReadUnitIndex: "",
+      selectedWriteUnitIndex: "0",
       unit: {
+        name: "",
         leader: {
           appeals: [0, 0, 0, 0],
           memory: 0
@@ -678,29 +796,56 @@ export default {
         appealUpByLowMemory: 0, // アピールUP (思い出低)
         interest: 0, // 興味
         perfectly: 0, // パーフェクトリィ
-        memoryUp: 25 // 思い出UP
+        memoryUp: 0 // 思い出UP
       },
       abilityItems: [
-        { key: "bond", label: "アイドルの絆の個数", min: 0, max: 20 },
-        { key: "startDash", label: "スタートダッシュ", min: 0, max: 5 },
-        { key: "slowStarter", label: "スロースターター", min: 0, max: 5 },
+        { key: "bond", label: "アイドルの絆", unit: "個", min: 0, max: 20 },
+        {
+          key: "startDash",
+          label: "スタートダッシュ",
+          unit: "個",
+          min: 0,
+          max: 5
+        },
+        {
+          key: "slowStarter",
+          label: "スロースターター",
+          unit: "個",
+          min: 0,
+          max: 5
+        },
         {
           key: "appealUpByHighMemory",
           label: "アピールUP(思い出高)",
+          unit: "個",
           min: 0,
           max: 5
         },
         {
           key: "appealUpByLowMemory",
           label: "アピールUP(思い出低)",
+          unit: "個",
           min: 0,
           max: 5
         },
-        { key: "interest", label: "興味UP合計値(%)", min: -15, max: 15 },
-        { key: "perfectly", label: "パーフェクトリィ", min: 0, max: 5 },
+        {
+          key: "interest",
+          label: "興味UP合計値(%)",
+          unit: "%",
+          min: -15,
+          max: 15
+        },
+        {
+          key: "perfectly",
+          label: "パーフェクトリィ",
+          unit: "個",
+          min: 0,
+          max: 5
+        },
         {
           key: "memoryUp",
           label: "思い出ゲージ増加量合計(%)",
+          unit: "%",
           min: -50,
           max: 25
         }
@@ -711,13 +856,19 @@ export default {
         vi: 2,
         me: 3
       },
+      appealClassIdx: {
+        0: "vo",
+        1: "da",
+        2: "vi",
+        3: "me"
+      },
       appealCalcValues: {
         position: "center",
         action: "1.5",
         turn: 1,
         memory: 10,
         extraMemoryUp: 0,
-        mental: 1,
+        mental: 1000,
         factor: {
           // アピール倍率
           vo: 0,
@@ -744,12 +895,12 @@ export default {
         }
       },
       appealBaseFields: [
-        { key: "type", label: "" },
-        { key: "leader", label: "Leader" },
-        { key: "vocal", label: "Vocal" },
-        { key: "center", label: "Center" },
-        { key: "dance", label: "Dance" },
-        { key: "visual", label: "Visual" }
+        { key: "type", label: "", class: "" },
+        { key: "leader", label: "Leader", class: "le" },
+        { key: "vocal", label: "Vocal", class: "vo" },
+        { key: "center", label: "Center", class: "ce" },
+        { key: "dance", label: "Dance", class: "da" },
+        { key: "visual", label: "Visual", class: "vi" }
       ],
       appealPositionOptions: [
         { value: "center", text: "Center" },
@@ -759,8 +910,17 @@ export default {
         { value: "leader", text: "Leader" },
         {
           value: "memory",
-          text: "思い出アピール (Center, 思い出LV倍率 x ユニット補正を自動適用)"
+          text:
+            "思い出アピール (Center,　思い出LV倍率 x ユニット補正を自動適用, ver β)"
         }
+      ],
+      tention: "20",
+      tentionOptions: [
+        { value: "0", text: "思い出ゲージ0% - 紫の顔(絶不調)" },
+        { value: "10", text: "思い出ゲージ10% - 青の顔(不調)" },
+        { value: "20", text: "思い出ゲージ20% - 緑の顔(普通)" },
+        { value: "30", text: "思い出ゲージ30% - 黄色の顔(好調)" },
+        { value: "70", text: "思い出ゲージ70% - 赤の顔(絶好調)" }
       ],
       appealActionOptions: [
         { value: "1.5", text: "Perfect or 思い出Good (1.5倍)" },
@@ -771,6 +931,23 @@ export default {
     };
   },
   computed: {
+    savedataWriteOptions() {
+      const label = (index, save) => {
+        if (!save.unit) {
+          return `${index + 1}: --------`;
+        }
+        const n = save.unit.name || "No Name";
+        return `${index + 1}: ${n}`;
+      };
+      return this.$store.state.saves.map((save, idx) => {
+        return { value: idx, text: label(idx, save) };
+      });
+    },
+    savedataReadOptions() {
+      return [
+        { value: "", text: "(この状態を読み込むと値をリセットします)" }
+      ].concat(this.savedataWriteOptions);
+    },
     appealBaseValues() {
       const idx = this.idx;
       const { leader, vocal, center, dance, visual } = this.unit;
@@ -821,7 +998,7 @@ export default {
         lv2factors[visual.memory];
       const lv = center.memory >= 5 ? "MAX" : center.memory;
       const unitFactorLabel = Math.floor(unitFactor * 100) / 100;
-      const label = `Lv. ${lv} (x ${unitFactorLabel})`;
+      const label = `Lv. ${lv} (編成補正 x ${unitFactorLabel})`;
       return { label, memoryFactor, unitFactor };
     },
     unitCalc() {
@@ -1005,7 +1182,7 @@ export default {
       // ターンの初期化
       this.appealCalcValues.mental = Number(this.unitCalc.me);
       this.appealCalcValues.turn = 1;
-      this.appealCalcValues.memory = 0;
+      this.appealCalcValues.memory = Number(this.tention);
       this.appealCalcValues.extraMemoryUp = 0;
     },
     calcNextTurn() {
@@ -1041,6 +1218,51 @@ export default {
         Number(this.appealCalcValues.memory) + totalUp
       );
       this.appealCalcValues.extraMemoryUp = 0;
+    },
+    loadUnit() {
+      // ユニットをロード
+      console.log(this.selectedReadUnitIndex);
+      if (this.selectedReadUnitIndex === "") {
+        this.$set(this.unit, "name", "");
+        ["leader", "vocal", "center", "dance", "visual"].forEach(k => {
+          this.$set(this.unit, k, {
+            appeals: [0, 0, 0, 0],
+            memory: 0
+          });
+        });
+        this.$set(this, "abilities", {
+          bond: 0, // 有効な絆の個数
+          startDash: 0,
+          slowStarter: 0,
+          appealUpByHighMemory: 0, // アピールUP (思い出高)
+          appealUpByLowMemory: 0, // アピールUP (思い出低)
+          interest: 0, // 興味
+          perfectly: 0, // パーフェクトリィ
+          memoryUp: 0 // 思い出UP
+        });
+      } else {
+        const index = Number(this.selectedReadUnitIndex);
+        const save = this.$store.state.saves[index];
+        if (!save.unit) {
+          // ユニット情報がない場合は何もしない
+          return;
+        }
+        this.$set(this, "unit", this.$deepCopy(save.unit));
+        this.$set(this, "abilities", this.$deepCopy(save.abilities));
+      }
+    },
+    saveUnit() {
+      // ユニットを localStorage へ保存
+      const now = new Date().toISOString();
+      this.unit.savedate = now;
+      if (!this.unit.name) {
+        this.unit.name = "Untitled";
+      }
+      this.$store.commit("save", {
+        index: this.selectedWriteUnitIndex,
+        unit: this.$deepCopy(this.unit),
+        abilities: this.$deepCopy(this.abilities)
+      });
     }
   }
 };
@@ -1048,10 +1270,11 @@ export default {
 
 <style>
 h1 {
-  font-size: 1.4em;
+  padding-top: 20px;
+  font-size: 1.5em;
 }
 h2 {
-  font-size: 1.2em;
+  font-size: 1.3em;
 }
 h3 {
   font-size: 1.1em;
@@ -1066,10 +1289,37 @@ h3 {
   background-color: #fe7bde;
 }
 
+.da {
+  background-color: #9edcff;
+}
+
+.vi {
+  background-color: #fcffa0;
+}
+
+.me {
+  background-color: #ff6fff;
+}
+
+.cell-center {
+  text-align: center;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.cell-col {
+  min-height: 42px;
+}
+
 @media screen and (max-width: 800px) {
   .cell-input {
-    padding-left: 2px;
-    padding-right: 2px;
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+  .cell-col {
+    min-height: 70px;
   }
 }
 </style>
