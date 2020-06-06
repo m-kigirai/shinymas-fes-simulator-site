@@ -7,9 +7,8 @@
         </h1>
         <p>
           シャニマスのフェスモードでのアピール値を算出するツールです。
-          PCでの閲覧推奨です。
+          現在β版であり、結果が一致しないときがあります。
         </p>
-        <p>現在ベータ版です。 算出結果が一致しないときがあります。</p>
       </b-col>
     </b-row>
     <br />
@@ -545,25 +544,25 @@
               />
             </b-col>
           </b-row>
-          <b-row>
+          <b-row v-for="n of 3" :key="n">
             <b-col class="cell-col">
-              <span class="bold">審査員興味値(%)</span>
+              <span class="bold">興味値UP/DOWN{{ n }} (%)</span>
             </b-col>
             <b-col class="vo">
               <b-form-input
-                v-model="appealCalcValues.interest.vo"
+                v-model="appealCalcValues.interest.vo[n - 1]"
                 type="number"
               />
             </b-col>
             <b-col class="da">
               <b-form-input
-                v-model="appealCalcValues.interest.da"
+                v-model="appealCalcValues.interest.da[n - 1]"
                 type="number"
               />
             </b-col>
             <b-col class="vi">
               <b-form-input
-                v-model="appealCalcValues.interest.vi"
+                v-model="appealCalcValues.interest.vi[n - 1]"
                 type="number"
               />
             </b-col>
@@ -653,27 +652,27 @@
               <span class="bold">バフ合計値(%)</span>
             </b-col>
             <b-col class="vo text-center">
-              <span class="bold">{{ totalBuff.vo }}</span>
+              <span class="bold">{{ totalBuff.vo }} %</span>
             </b-col>
             <b-col class="da text-center">
-              <span class="bold">{{ totalBuff.da }}</span>
+              <span class="bold">{{ totalBuff.da }} %</span>
             </b-col>
             <b-col class="vi text-center">
-              <span class="bold">{{ totalBuff.vi }}</span>
+              <span class="bold">{{ totalBuff.vi }} %</span>
             </b-col>
           </b-row>
           <b-row cols="4">
             <b-col class="cell-col">
-              <span class="bold">興味合計値(%)</span>
+              <span class="bold">最終興味値補正(%)</span>
             </b-col>
             <b-col class="vo text-center">
-              <span class="bold">{{ totalInterest.vo }}</span>
+              <span class="bold">{{ totalInterest.vo * 100 }} %</span>
             </b-col>
             <b-col class="da text-center">
-              <span class="bold">{{ totalInterest.da }}</span>
+              <span class="bold">{{ totalInterest.da * 100 }} %</span>
             </b-col>
             <b-col class="vi text-center">
-              <span class="bold">{{ totalInterest.vi }}</span>
+              <span class="bold">{{ totalInterest.vi * 100 }} %</span>
             </b-col>
           </b-row>
           <b-row cols="4">
@@ -710,8 +709,19 @@
                   アピール係数)
                 </li>
                 <li>
+                  興味値補正 = 1 * nΠi(1 + 興味UP(%)の項目i/100) * nΠi(1 -
+                  興味DOWN(%)の項目i/100)
+                  <ul>
+                    <li>
+                      興味値は個別の値の総乗(nΠi)を取る。
+                      具体的には、50%ダウンと30%ダウンが同時に付いている場合は 1
+                      * 0.5 * 0.7 = 0.35 となる
+                    </li>
+                  </ul>
+                </li>
+                <li>
                   フェスアピール値 = INT(INT(基礎係数 * アピール倍率) *
-                  Excellent係数 * (1 + 興味値合計(%)/100))
+                  Excellent係数 * 興味値補正)
                 </li>
                 <li>
                   アピール係数はPerfectなら1.5, Goodなら1.1, Normarlなら1.0,
@@ -805,7 +815,8 @@ export default {
         slowStarter: 0,
         appealUpByHighMemory: 0, // アピールUP (思い出高)
         appealUpByLowMemory: 0, // アピールUP (思い出低)
-        interest: 0, // 興味
+        interestUp: 0, // 人気者
+        interestDown: 0, // ひかえめ
         perfectly: 0, // パーフェクトリィ
         memoryUp: 0 // 思い出UP
       },
@@ -840,11 +851,18 @@ export default {
           max: 5
         },
         {
-          key: "interest",
-          label: "興味UP合計値(%)",
-          unit: "%",
-          min: -15,
-          max: 15
+          key: "interestUp",
+          label: "人気者 (※他ユニットも含む)",
+          unit: "個",
+          min: 0,
+          max: 30
+        },
+        {
+          key: "interestDown",
+          label: "ひかえめ (※他ユニットも含む)",
+          unit: "個",
+          min: 0,
+          max: 30
         },
         {
           key: "perfectly",
@@ -899,10 +917,10 @@ export default {
           vi: 0
         },
         interest: {
-          // 審査員個別の興味値
-          vo: 0,
-          da: 0,
-          vi: 0
+          // 審査員付与の興味値
+          vo: [0, 0, 0, 0, 0],
+          da: [0, 0, 0, 0, 0],
+          vi: [0, 0, 0, 0, 0]
         }
       },
       appealBaseFields: [
@@ -923,6 +941,17 @@ export default {
           value: "memory",
           text:
             "思い出アピール (Center,　思い出LV倍率 x ユニット補正を自動適用, ver β)"
+        }
+      ],
+      appealSample: "",
+      appealSampleOptions: [
+        { value: "", text: "アピールサンプル選択" },
+        { value: "vo-sample", text: "ボーカルアピールⅣ (Vo. 2.5倍)" },
+        { value: "da-sample", text: "ダンスアピールⅣ (Da. 2.5倍)" },
+        { value: "vi-sample", text: "ビジュアルアピールⅣ (Vi. 2.5倍)" },
+        {
+          value: "composite-sample",
+          text: "ほわっとスマイル (Vo. 2倍 + Vi. 2倍)"
         }
       ],
       tention: "20",
@@ -1079,12 +1108,39 @@ export default {
       return { vo, da, vi };
     },
     totalInterest() {
-      const interest = this.appealCalcValues.interest;
-      const ability = this.abilities.interest;
-      const vo = this.sum([ability, interest.vo]);
-      const da = this.sum([ability, interest.da]);
-      const vi = this.sum([ability, interest.vi]);
-      return { vo, da, vi };
+      // 累計興味値を算出
+      // 全審査員につくアビリティ分
+      let abilityEffect = 1;
+      for (let i = 0; i < this.abilities.interestUp; i++) {
+        // 人気者: 3% UP
+        abilityEffect = abilityEffect * 1.03;
+      }
+      for (let i = 0; i < this.abilities.interestDown; i++) {
+        // 控えめ: 3% DOWN
+        abilityEffect = abilityEffect * 0.97;
+      }
+      // 審査員個別の効果
+      const pred = v => {
+        return Math.abs(Number(v)) > 0;
+      };
+      const productions = (prev, curr) => {
+        const per = Number(curr);
+        return prev * (1 + per / 100);
+      };
+      const vo = this.appealCalcValues.interest.vo
+        .filter(pred)
+        .reduce(productions, abilityEffect);
+      const da = this.appealCalcValues.interest.da
+        .filter(pred)
+        .reduce(productions, abilityEffect);
+      const vi = this.appealCalcValues.interest.vi
+        .filter(pred)
+        .reduce(productions, abilityEffect);
+      return {
+        vo: this.$round(vo, 5),
+        da: this.$round(da, 5),
+        vi: this.$round(vi, 5)
+      };
     },
     baseAppeal() {
       // フェスアピール基礎値 = 2.0 * アピールするアイドルの該当ステータス + 0.5 * (アピールしないアイドルの該当ステータス)
@@ -1107,9 +1163,9 @@ export default {
     voAppeal() {
       const base = this.baseAppeal;
       const interest = this.totalInterest;
-      const vo = Math.floor(Math.floor(base.vo) * 2 * (1 + interest.vo / 100));
-      const da = Math.floor(Math.floor(base.da) * (1 + interest.vo / 100));
-      const vi = Math.floor(Math.floor(base.vi) * (1 + interest.vo / 100));
+      const vo = Math.floor(Math.floor(base.vo) * 2 * interest.vo);
+      const da = Math.floor(Math.floor(base.da) * interest.vo);
+      const vi = Math.floor(Math.floor(base.vi) * interest.vo);
       return {
         vo,
         da,
@@ -1121,9 +1177,9 @@ export default {
     daAppeal() {
       const base = this.baseAppeal;
       const interest = this.totalInterest;
-      const vo = Math.floor(Math.floor(base.vo) * (1 + interest.da / 100));
-      const da = Math.floor(Math.floor(base.da) * 2 * (1 + interest.da / 100));
-      const vi = Math.floor(Math.floor(base.vi) * (1 + interest.da / 100));
+      const vo = Math.floor(Math.floor(base.vo) * interest.da);
+      const da = Math.floor(Math.floor(base.da) * 2 * interest.da);
+      const vi = Math.floor(Math.floor(base.vi) * interest.da);
       return {
         vo,
         da,
@@ -1135,9 +1191,9 @@ export default {
     viAppeal() {
       const base = this.baseAppeal;
       const interest = this.totalInterest;
-      const vo = Math.floor(Math.floor(base.vo) * (1 + interest.vi / 100));
-      const da = Math.floor(Math.floor(base.da) * (1 + interest.vi / 100));
-      const vi = Math.floor(Math.floor(base.vi) * 2 * (1 + interest.vi / 100));
+      const vo = Math.floor(Math.floor(base.vo) * interest.vi);
+      const da = Math.floor(Math.floor(base.da) * interest.vi);
+      const vi = Math.floor(Math.floor(base.vi) * 2 * interest.vi);
       return {
         vo,
         da,
@@ -1239,7 +1295,11 @@ export default {
       this.$set(this.appealCalcValues, "factor", { vo: 0, da: 0, vi: 0 });
       this.$set(this.appealCalcValues, "effect", { vo: 0, da: 0, vi: 0 });
       this.$set(this.appealCalcValues, "passive", { vo: 0, da: 0, vi: 0 });
-      this.$set(this.appealCalcValues, "interest", { vo: 0, da: 0, vi: 0 });
+      this.$set(this.appealCalcValues, "interest", {
+        vo: [0, 0, 0, 0, 0],
+        da: [0, 0, 0, 0, 0],
+        vi: [0, 0, 0, 0, 0]
+      });
     },
     loadUnit() {
       // ユニットをロード
@@ -1258,13 +1318,14 @@ export default {
           slowStarter: 0,
           appealUpByHighMemory: 0, // アピールUP (思い出高)
           appealUpByLowMemory: 0, // アピールUP (思い出低)
-          interest: 0, // 興味
+          interestUp: 0, // 人気者
+          interestDown: 0, // ひかえめ
           perfectly: 0, // パーフェクトリィ
           memoryUp: 0 // 思い出UP
         });
       } else {
         const index = Number(this.selectedReadUnitIndex);
-        const save = this.$store.state.saves[index];
+        const save = this.$store.getters.load(index);
         if (!save.unit) {
           // ユニット情報がない場合は何もしない
           return;
@@ -1285,6 +1346,24 @@ export default {
         unit: this.$deepCopy(this.unit),
         abilities: this.$deepCopy(this.abilities)
       });
+    },
+    chooseSample() {
+      // サンプルのアピール倍率を適用
+      if (!this.appealSample) {
+        return;
+      }
+      if (this.appealSample === "vo-sample") {
+        // Vo 2.5
+        this.$set(this.appealCalcValues, "factor", { vo: 2.5, da: 0, vi: 0 });
+      } else if (this.appealSample === "da-sample") {
+        // Da 2.5
+        this.$set(this.appealCalcValues, "factor", { vo: 0, da: 2.5, vi: 0 });
+      } else if (this.appealSample === "vi-sample") {
+        // Vi 2.5
+        this.$set(this.appealCalcValues, "factor", { vo: 0, da: 0, vi: 2.5 });
+      } else if (this.appealSample === "composite-sample") {
+        this.$set(this.appealCalcValues, "factor", { vo: 2, da: 0, vi: 2 });
+      }
     }
   }
 };
