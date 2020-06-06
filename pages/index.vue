@@ -1001,12 +1001,16 @@ export default {
       const memoryFactor = memoryFactors[center.memory];
       // 編成補正: 思い出Lv.5 = 0.075、Lv.4 = 0.05、Lv.3 = 0.03、Lv.2 = 0.02、Lv.1 =Lv.0 = 0
       const lv2factors = [0, 0, 0.02, 0.03, 0.05, 0.075];
+      // 小数点誤差の補正
       const unitFactor =
-        1.0 +
-        lv2factors[leader.memory] +
-        lv2factors[vocal.memory] +
-        lv2factors[dance.memory] +
-        lv2factors[visual.memory];
+        Math.round(
+          10000 *
+            (1.0 +
+              lv2factors[leader.memory] +
+              lv2factors[vocal.memory] +
+              lv2factors[dance.memory] +
+              lv2factors[visual.memory])
+        ) / 10000;
       const lv = center.memory >= 5 ? "MAX" : center.memory;
       const unitFactorLabel = Math.floor(unitFactor * 100) / 100;
       const label = `Lv. ${lv} (編成補正 x ${unitFactorLabel})`;
@@ -1089,15 +1093,15 @@ export default {
       const buff = this.totalBuff;
       const action = Number(this.appealCalcValues.action); // Perfect とか
       const appealFactor = this.appealCalcValues.factor; // 何倍アピールか
-      const vo = Math.floor(
-        Math.floor(fes.vo * (1 + buff.vo / 100) * appealFactor.vo) * action
-      );
-      const da = Math.floor(
-        Math.floor(fes.da * (1 + buff.da / 100) * appealFactor.da) * action
-      );
-      const vi = Math.floor(
-        Math.floor(fes.vi * (1 + buff.vi / 100) * appealFactor.vi) * action
-      );
+      const calc = (fes, factor, buff, action) => {
+        return Math.floor(
+          Math.floor(Math.floor(fes * factor) * (1 + buff / 100)) * action
+        );
+      };
+      const vo = calc(fes.vo, appealFactor.vo, buff.vo, action);
+      const da = calc(fes.da, appealFactor.da, buff.da, action);
+      const vi = calc(fes.vi, appealFactor.vi, buff.vi, action);
+
       return { vo, da, vi };
     },
     voAppeal() {
