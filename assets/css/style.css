@@ -1,0 +1,34 @@
+h1 {
+  padding-top: 20px;
+  font-size: 1.5em;
+}
+h2 {
+  font-size: 1.3em;
+}
+h3 {
+  font-size: 1.1em;
+}
+
+.vo {
+  background-color: #fe7bde;
+}
+
+.da {
+  background-color: #9edcff;
+}
+
+.vi {
+  background-color: #fcffa0;
+}
+
+.me {
+  background-color: #ff6fff;
+}
+
+.cell-center {
+  text-align: center;
+}
+
+.bold {
+  font-weight: bold;
+}

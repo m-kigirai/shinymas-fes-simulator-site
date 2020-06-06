@@ -9,12 +9,13 @@
           シャニマスのフェスモードでのアピール値を算出するツールです。
           現在β版であり、結果が一致しないときがあります。
         </p>
+        <p><a href="/usage">利用方法の説明はこちら</a></p>
       </b-col>
     </b-row>
     <br />
     <div>
       <b-tabs content-class="mt-3" pills justified>
-        <b-tab title="ユニット情報入力" active>
+        <b-tab title="ユニット情報" active>
           <b-row>
             <b-col>
               <h2>保存されたユニットデータ</h2>
@@ -337,6 +338,17 @@
               </ul>
             </b-col>
           </b-row>
+          <b-row>
+            <b-col>
+              <b-button
+                variant="outline-primary"
+                class="float-right"
+                @click="gotoTop"
+              >
+                ページの一番上に戻る
+              </b-button>
+            </b-col>
+          </b-row>
         </b-tab>
         <b-tab title="アピール値計算">
           <b-row>
@@ -546,7 +558,7 @@
           </b-row>
           <b-row v-for="n of 3" :key="n">
             <b-col class="cell-col">
-              <span class="bold">興味値UP/DOWN{{ n }} (%)</span>
+              <span class="bold">興味値UP/DOWN {{ n }} (%)</span>
             </b-col>
             <b-col class="vo">
               <b-form-input
@@ -690,66 +702,6 @@
             </b-col>
           </b-row>
           <br />
-        </b-tab>
-        <!-- 備考タブ -->
-        <b-tab title="備考">
-          <b-row>
-            <b-col>
-              <h2>利用中の計算式</h2>
-              <h3>アピール値算出式</h3>
-              <ul>
-                <li>
-                  フェスアピール基礎値 = 2.0 *
-                  アピールするアイドルの該当ステータス + 0.5 *
-                  (アピールしないアイドルの該当ステータス合計)
-                </li>
-                <li>
-                  基礎係数 = INT(フェスアピール基礎値 * (1 +
-                  該当属性バフ合計値(%)/100 + アビリティバフ合計値(%)/100) *
-                  アピール係数)
-                </li>
-                <li>
-                  興味値補正 = 1 * nΠi(1 + 興味UP(%)の項目i/100) * nΠi(1 -
-                  興味DOWN(%)の項目i/100)
-                  <ul>
-                    <li>
-                      興味値は個別の値の総乗(nΠi)を取る。
-                      具体的には、50%ダウンと30%ダウンが同時に付いている場合は 1
-                      * 0.5 * 0.7 = 0.35 となる
-                    </li>
-                  </ul>
-                </li>
-                <li>
-                  フェスアピール値 = INT(INT(基礎係数 * アピール倍率) *
-                  Excellent係数 * 興味値補正)
-                </li>
-                <li>
-                  アピール係数はPerfectなら1.5, Goodなら1.1, Normarlなら1.0,
-                  Badなら0.5
-                </li>
-                <li>
-                  Excellent係数はアピール属性と審査員属性が一致した場合2,
-                  一致しない場合は1
-                </li>
-              </ul>
-              <h3>単独アビリティバフ算出式</h3>
-              <ul>
-                <li>
-                  スタートダッシュ(%): MAX(10 - (8/9 * (現在ターン数 - 1)), 2)
-                </li>
-                <li>
-                  スロースタート(%): MIN(4 + (16/9 * (現在ターン数 - 1)), 20)
-                </li>
-                <li>
-                  アピールアップ(思い出高) (%): 2 + (思い出ゲージ / 100) * 8
-                </li>
-                <li>
-                  アピールアップ(思い出低) (%): 4 + (1 - 思い出ゲージ / 100) *
-                  16
-                </li>
-              </ul>
-            </b-col>
-          </b-row>
         </b-tab>
       </b-tabs>
     </div>
@@ -1150,9 +1102,7 @@ export default {
       const action = Number(this.appealCalcValues.action); // Perfect とか
       const appealFactor = this.appealCalcValues.factor; // 何倍アピールか
       const calc = (fes, factor, buff, action) => {
-        return Math.floor(
-          Math.floor(Math.floor(fes * factor) * (1 + buff / 100)) * action
-        );
+        return Math.floor(Math.floor(fes * factor * (1 + buff / 100)) * action);
       };
       const vo = calc(fes.vo, appealFactor.vo, buff.vo, action);
       const da = calc(fes.da, appealFactor.da, buff.da, action);
@@ -1364,50 +1314,22 @@ export default {
       } else if (this.appealSample === "composite-sample") {
         this.$set(this.appealCalcValues, "factor", { vo: 2, da: 0, vi: 2 });
       }
+    },
+    gotoTop() {
+      // ウインドウを一番上に戻す
+      window.scrollTo(0, 0);
     }
   }
 };
 </script>
 
 <style>
-h1 {
-  padding-top: 20px;
-  font-size: 1.5em;
-}
-h2 {
-  font-size: 1.3em;
-}
-h3 {
-  font-size: 1.1em;
-}
 .appeal {
   height: 3em;
 }
+
 .header {
   min-height: 50px;
-}
-.vo {
-  background-color: #fe7bde;
-}
-
-.da {
-  background-color: #9edcff;
-}
-
-.vi {
-  background-color: #fcffa0;
-}
-
-.me {
-  background-color: #ff6fff;
-}
-
-.cell-center {
-  text-align: center;
-}
-
-.bold {
-  font-weight: bold;
 }
 
 .cell-col {
