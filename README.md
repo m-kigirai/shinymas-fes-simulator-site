@@ -34,6 +34,8 @@ For detailed explanation on how things work, check out [Nuxt.js docs](https://nu
 
 - Github Issue に記載
 
-# LICENSE
+# ゲームからの引用画像について
 
-MIT
+©BANDAI NAMCO Entertinment Inc. ©BXD Inc.
+
+当ページ上で用いるゲーム画像の著作権、及びその他知的財産権は当該サービスの提供元に帰属します。
