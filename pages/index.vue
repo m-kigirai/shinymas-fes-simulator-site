@@ -9,6 +9,10 @@
           シャニマスのフェスモードでのアピール値を計算/シミュレーションするツールです。
           現在β版であり、結果が一致しないときがあります。
         </p>
+      </b-col>
+    </b-row>
+    <b-row>
+      <b-col>
         <p><a href="/usage">利用方法の説明はこちら</a></p>
       </b-col>
     </b-row>
@@ -708,6 +712,25 @@
     <br />
     <b-row>
       <b-col>
+        <a
+          href="https://twitter.com/share?ref_src=twsrc%5Etfw"
+          class="twitter-share-button"
+          data-text="シャニマス フェス計算機 - "
+          data-url="https://kind-agnesi-553039.netlify.app/"
+          data-lang="ja"
+          data-show-count="false"
+        >
+          Tweet
+        </a>
+        <script
+          async
+          src="https://platform.twitter.com/widgets.js"
+          charset="utf-8"
+        ></script>
+      </b-col>
+    </b-row>
+    <b-row>
+      <b-col>
         <p>
           このページの情報の正当性は一切保証されません。
           また、ページ内の情報を利用したことによって生じた一切の不利益に対してページの製作者は責を負いません。
@@ -719,12 +742,17 @@
         </p>
         <p>
           コンタクト(バグ報告, 改善要望, サービス提供元からの画像削除依頼など)は
+          <a href="https://twitter.com/m_kigirai" target="_blank">
+            Twitter: @m_kigirai
+          </a>
+          もしくは
           <a
             href="https://github.com/m-kigirai/shinymas-fes-simulator-site"
             target="_blank"
           >
-            こちらから。
+            Github
           </a>
+          から。
         </p>
       </b-col>
     </b-row>
