@@ -29,9 +29,11 @@ For detailed explanation on how things work, check out [Nuxt.js docs](https://nu
 
 - THE iDOLM@STER ShinyColors 提供サイト - https://shinycolors.enza.fun/
 - シャニマス攻略 Wiki (各アピール値計算式の参考) - https://wikiwiki.jp/shinycolors/
+- 各種アピール計算式 - https://scamenbo.hatenablog.com/entry/2019/11/22/080010
 
 # Contact
 
+- [Twitter: @m_kigirai](https://github.com/m-kigirai/shinymas-fes-simulator-site)
 - Github Issue に記載
 
 # ゲームからの引用画像について

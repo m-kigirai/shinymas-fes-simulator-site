@@ -353,7 +353,99 @@
               </b-button>
             </b-col>
           </b-row>
+          <b-row>
+            <b-col>
+              <h2>アピールショートカット登録 (任意)</h2>
+              <p>
+                ユニット内で複数のアピールを比較する場合に登録しておくと便利です。
+              </p>
+            </b-col>
+          </b-row>
+          <br />
+          <b-row>
+            <b-col sm="2" class="label-input-col">
+              <span class="bold">アピール名称: </span>
+              <b-form-input v-model="appealTemplateValues.name" type="text" />
+            </b-col>
+            <b-col sm="2">
+              <span class="bold label-input-col">実施ポジション: </span>
+              <b-form-select
+                v-model="appealTemplateValues.position"
+                :options="appealTemplatePositionOptions"
+              ></b-form-select>
+            </b-col>
+            <b-col sm="2" class="vo label-input-col">
+              <span class="bold">Vo.(最大)倍率: </span>
+              <b-form-input
+                v-model="appealTemplateValues.factor.vo"
+                type="number"
+              />
+            </b-col>
+            <b-col sm="2" class="da label-input-col">
+              <span class="bold">Da.(最大)倍率: </span>
+              <b-form-input
+                v-model="appealTemplateValues.factor.da"
+                type="number"
+              />
+            </b-col>
+            <b-col sm="2" class="vi label-input-col">
+              <span class="bold">Vi.(最大)倍率: </span>
+              <b-form-input
+                v-model="appealTemplateValues.factor.vi"
+                type="number"
+              />
+            </b-col>
+            <b-col sm="2" class="label-input-col">
+              <span class="bold">倍率変動設定: </span>
+              <b-form-select
+                v-model="appealTemplateValues.type"
+                :options="appealTemplateTypeOptions"
+              ></b-form-select>
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col>
+              <b-button
+                variant="outline-success"
+                class="float-right"
+                @click="addAppealTemplate"
+              >
+                追加
+              </b-button>
+            </b-col>
+          </b-row>
+          <br />
+          <b-row class="justify-content-md-center text-center">
+            <b-col sm="3">
+              アピールショートカット一覧
+            </b-col>
+            <b-col sm="9">
+              <b-form-select
+                v-model="selectedAppealTemplate"
+                :options="appealTemplateChooseOptions"
+              ></b-form-select>
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col>
+              <b-button
+                variant="outline-primary"
+                class="float-right"
+                @click="deleteAppealTemplate"
+              >
+                選択中の要素を削除
+              </b-button>
+              <b-button
+                variant="outline-danger"
+                class="float-right"
+                @click="deleteAllAppealTemplate"
+              >
+                全てのショートカットを削除
+              </b-button>
+            </b-col>
+          </b-row>
         </b-tab>
+        <!-- -->
         <b-tab title="アピール値計算">
           <b-row>
             <b-col>
@@ -451,6 +543,30 @@
           <br />
           <b-row>
             <b-col sm="3">
+              <span class="bold">計算モード</span>
+            </b-col>
+            <b-col sm="9">
+              <b-form-select
+                v-model="calcMode"
+                :options="modeOptions"
+              ></b-form-select>
+            </b-col>
+          </b-row>
+          <b-row v-if="detailMode">
+            <b-col sm="3">
+              <span class="bold">
+                累計注目度(%)
+              </span>
+            </b-col>
+            <b-col sm="9">
+              <b-form-input
+                v-model="appealCalcValues.attention"
+                type="number"
+              />
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col sm="3">
               <span class="bold">アピール係数</span>
             </b-col>
             <b-col sm="9">
@@ -461,6 +577,17 @@
             </b-col>
           </b-row>
           <b-row>
+            <b-col sm="3">
+              <span class="bold">アピールショートカット</span>
+            </b-col>
+            <b-col sm="9">
+              <b-form-select
+                v-model="selectedAppealTemplate"
+                :options="appealTemplateChooseOptions"
+              ></b-form-select>
+            </b-col>
+          </b-row>
+          <b-row v-if="!templateSelected">
             <b-col sm="3">
               <span class="bold">
                 アピールポジション
@@ -488,7 +615,33 @@
               <span class="bold">Vi.</span>
             </b-col>
           </b-row>
-          <b-row cols="4">
+          <b-row v-if="templateSelected" cols="4">
+            <b-col class="cell-col">
+              <span class="bold">アピール倍率(自動計算)</span>
+            </b-col>
+            <b-col class="vo">
+              <b-form-input
+                v-model="appealFactor.vo"
+                type="number"
+                :disabled="true"
+              />
+            </b-col>
+            <b-col class="da">
+              <b-form-input
+                v-model="appealFactor.da"
+                type="number"
+                :disabled="true"
+              />
+            </b-col>
+            <b-col class="vi">
+              <b-form-input
+                v-model="appealFactor.vi"
+                type="number"
+                :disabled="true"
+              />
+            </b-col>
+          </b-row>
+          <b-row v-else cols="4">
             <b-col class="cell-col">
               <span class="bold">アピール倍率</span>
             </b-col>
@@ -511,6 +664,52 @@
                 v-model="appealCalcValues.factor.vi"
                 type="number"
                 step="0.001"
+              />
+            </b-col>
+          </b-row>
+          <b-row v-if="detailMode" cols="4">
+            <b-col class="cell-col">
+              <span class="bold">バフ個数</span>
+            </b-col>
+            <b-col class="vo">
+              <b-form-input
+                v-model="appealCalcValues.effectCount.up.vo"
+                type="number"
+              />
+            </b-col>
+            <b-col class="da">
+              <b-form-input
+                v-model="appealCalcValues.effectCount.up.da"
+                type="number"
+              />
+            </b-col>
+            <b-col class="vi">
+              <b-form-input
+                v-model="appealCalcValues.effectCount.up.vi"
+                type="number"
+              />
+            </b-col>
+          </b-row>
+          <b-row v-if="detailMode" cols="4">
+            <b-col class="cell-col">
+              <span class="bold">デバフ個数</span>
+            </b-col>
+            <b-col class="vo">
+              <b-form-input
+                v-model="appealCalcValues.effectCount.down.vo"
+                type="number"
+              />
+            </b-col>
+            <b-col class="da">
+              <b-form-input
+                v-model="appealCalcValues.effectCount.down.da"
+                type="number"
+              />
+            </b-col>
+            <b-col class="vi">
+              <b-form-input
+                v-model="appealCalcValues.effectCount.down.vi"
+                type="number"
               />
             </b-col>
           </b-row>
@@ -560,7 +759,7 @@
               />
             </b-col>
           </b-row>
-          <b-row v-for="n of 3" :key="n">
+          <b-row v-for="n of detailMode ? 5 : 3" :key="n">
             <b-col class="cell-col">
               <span class="bold">興味値UP/DOWN {{ n }} (%)</span>
             </b-col>
@@ -627,6 +826,17 @@
             <b-col class="vi cell-center">
               <span class="bold">{{ viAppeal.total }}</span>
               <div v-if="viAppeal.label">(内訳: {{ viAppeal.label }})</div>
+            </b-col>
+          </b-row>
+          <b-row style="padding-top: 4px;">
+            <b-col sm="3">
+              <span class="bold">アピールショートカット</span>
+            </b-col>
+            <b-col sm="9">
+              <b-form-select
+                v-model="selectedAppealTemplate"
+                :options="appealTemplateChooseOptions"
+              ></b-form-select>
             </b-col>
           </b-row>
           <br />
@@ -871,6 +1081,37 @@ export default {
         2: "vi",
         3: "me"
       },
+      appealTemplateValues: {
+        name: "", // 名称
+        position: "center", // アピール実施者
+        type: "", // 特殊倍率設定 (背水など)
+        factor: {
+          // 倍率
+          vo: 0,
+          da: 0,
+          vi: 0
+        }
+      },
+      selectedAppealTemplate: "",
+      // アピールテンプレート登録の実施者オプション
+      appealTemplatePositionOptions: [
+        { value: "center", text: "Center" },
+        { value: "vocal", text: "Vocal担当" },
+        { value: "dance", text: "Dance担当" },
+        { value: "visual", text: "Visual担当" },
+        { value: "leader", text: "Leader" }
+      ],
+      // アピールのタイプ
+      appealTemplateTypeOptions: [
+        { value: "", text: "通常" },
+        { value: "konshin", text: "メンタルが多いほど効果UP" },
+        { value: "haisui", text: "メンタルが少ないほど効果UP" },
+        { value: "shinnai", text: "思い出ゲージが多いほど効果UP" },
+        { value: "tyouhatsu", text: "注目度が高いほど効果UP" },
+        { value: "onmitsu", text: "注目度が低いほど効果UP" },
+        { value: "deleteUp", text: "消去:UPが多いほど効果UP" },
+        { value: "deleteDown", text: "消去:DOWNが多いほど効果UP" }
+      ],
       appealCalcValues: {
         position: "center",
         action: "1.5",
@@ -878,6 +1119,7 @@ export default {
         memory: 10,
         extraMemoryUp: 0,
         mental: 1000,
+        attention: 0,
         factor: {
           // アピール倍率
           vo: 0,
@@ -889,6 +1131,19 @@ export default {
           vo: 0,
           da: 0,
           vi: 0
+        },
+        effectCount: {
+          // 効果個数 (一部算出に利用)
+          up: {
+            vo: 0,
+            da: 0,
+            vi: 0
+          },
+          down: {
+            vo: 0,
+            da: 0,
+            vi: 0
+          }
         },
         passive: {
           // パッシブスキル（ターン毎につくもの)
@@ -923,17 +1178,6 @@ export default {
             "思い出アピール (Center,　思い出LV倍率 x ユニット補正を自動適用, ver β)"
         }
       ],
-      appealSample: "",
-      appealSampleOptions: [
-        { value: "", text: "アピールサンプル選択" },
-        { value: "vo-sample", text: "ボーカルアピールⅣ (Vo. 2.5倍)" },
-        { value: "da-sample", text: "ダンスアピールⅣ (Da. 2.5倍)" },
-        { value: "vi-sample", text: "ビジュアルアピールⅣ (Vi. 2.5倍)" },
-        {
-          value: "composite-sample",
-          text: "ほわっとスマイル (Vo. 2倍 + Vi. 2倍)"
-        }
-      ],
       tention: "20",
       tentionOptions: [
         { value: "0", text: "思い出ゲージ0% - 紫の顔(絶不調)" },
@@ -947,10 +1191,22 @@ export default {
         { value: "1.1", text: "Good (1.1倍)" },
         { value: "1.0", text: "Normal (1.0倍)" },
         { value: "0.5", text: "Bad (0.5倍)" }
+      ],
+      calcMode: "normal",
+      modeOptions: [
+        { value: "normal", text: "通常" },
+        {
+          value: "detail",
+          text:
+            "詳細モード(入力項目が増えます, アピール倍率自動算出で必要な場合があります)"
+        }
       ]
     };
   },
   computed: {
+    detailMode() {
+      return this.calcMode === "detail";
+    },
     savedataWriteOptions() {
       const label = (index, save) => {
         if (!save.unit) {
@@ -967,6 +1223,46 @@ export default {
       return [
         { value: "", text: "(この状態を読み込むと値をリセットします)" }
       ].concat(this.savedataWriteOptions);
+    },
+    appealTemplateChooseOptions() {
+      // アピールテンプレート一覧を作成
+      const findText = (options, value) => {
+        const candidate = options.filter(v => v.value === value);
+        return candidate.length > 0 ? candidate[0].text : undefined;
+      };
+      const factorLabel = tpl => {
+        const xs = [
+          { type: "Vo", dynamic: tpl.type !== "", factor: tpl.factor.vo },
+          { type: "Da", dynamic: tpl.type !== "", factor: tpl.factor.da },
+          { type: "Vi", dynamic: tpl.type !== "", factor: tpl.factor.vi }
+        ];
+        const eachLabels = xs
+          .filter(f => f.factor > 0)
+          .map(f => {
+            const maxlabel = f.dynamic ? "最大" : "";
+            return `${f.type}: ${maxlabel}${f.factor}倍`;
+          });
+        return eachLabels.join(" + ");
+      };
+      const saved = this.$store.state.appealTemplates.map((tpl, index) => {
+        const pos = findText(this.appealTemplatePositionOptions, tpl.position);
+        const extra = findText(this.appealTemplateTypeOptions, tpl.type);
+        const factor = factorLabel(tpl);
+        if (!tpl.name) {
+          // 名前入力なしの場合: 倍率 + 特殊効果
+          return {
+            value: index,
+            text: `${index + 1}: ${pos} - ${factor} (${extra})`
+          };
+        } else {
+          // 名前入力ありの場合: 倍率 + 特殊効果
+          return {
+            value: index,
+            text: `${index + 1}: ${tpl.name} ${pos} - ${factor} (${extra})`
+          };
+        }
+      });
+      return [{ value: "", text: "--------" }].concat(saved);
     },
     appealBaseValues() {
       const idx = this.idx;
@@ -1069,13 +1365,23 @@ export default {
     },
     fesAppeal() {
       const fesBase = this.appealBaseValues;
-      const key =
-        this.appealCalcValues.position === "memory"
-          ? "center"
-          : this.appealCalcValues.position;
-      const vo = fesBase[0][key];
-      const da = fesBase[1][key];
-      const vi = fesBase[2][key];
+      const position = () => {
+        // ポジションの決定
+        if (this.selectedAppealTemplate !== "") {
+          const index = Number(this.selectedAppealTemplate);
+          if (index < this.$store.state.appealTemplates.length) {
+            return this.$store.state.appealTemplates[index].position;
+          }
+        }
+        if (this.appealCalcValues.position === "memory") {
+          return "center";
+        }
+        return this.appealCalcValues.position;
+      };
+      const k = position();
+      const vo = fesBase[0][k];
+      const da = fesBase[1][k];
+      const vi = fesBase[2][k];
       return { vo, da, vi };
     },
     totalBuff() {
@@ -1122,13 +1428,128 @@ export default {
         vi: this.$round(vi, 5)
       };
     },
+    templateSelected() {
+      return this.selectedAppealTemplate !== "";
+    },
+    appealFactor() {
+      // 何倍アピールかの算出
+      if (this.selectedAppealTemplate === "") {
+        return this.appealCalcValues.factor;
+      }
+
+      const index = Number(this.selectedAppealTemplate);
+      const selected = this.$store.state.appealTemplates[index];
+      if (!selected) {
+        return this.appealCalcValues.factor;
+      }
+      const calc = selected => {
+        // 実際の計算ロジック
+        const vo = selected.factor.vo;
+        const da = selected.factor.da;
+        const vi = selected.factor.vi;
+        if (!selected.type) {
+          return { vo, da, vi };
+        }
+        // それ以外の場合は外部要素 K をかける
+        const maxMental = Number(this.unitCalc.me);
+        const mental = Number(this.appealCalcValues.mental);
+        const per = maxMental === 0 ? 1 : mental / maxMental;
+        const typeValue = type => {
+          if (type === "haisui") {
+            // 背水の場合
+            const v = 1 - 0.8 * per;
+            return { vo: v, da: v, vi: v };
+          }
+          if (type === "konshin") {
+            // 渾身の場合
+            const v = Math.max(0.2, 1.6 * per - 0.6);
+            return { vo: v, da: v, vi: v };
+          }
+          const mem = Number(this.appealCalcValues.memory);
+          if (type === "shinnai") {
+            // 親愛の場合
+            const v = 0.8 * (mem / 100) + 0.2;
+            return { vo: v, da: v, vi: v };
+          }
+          const attention = Number(this.appealCalcValues.attention);
+          const minmax = (x, y, z) => {
+            return Math.max(x, Math.min(y, z));
+          };
+          if (type === "tyouhatsu") {
+            // 挑発(注目度高)
+            const att = minmax(0, attention, 200);
+            const v = 0.4 * (att / 100) + 0.2;
+            return { vo: v, da: v, vi: v };
+          }
+          if (type === "onmitsu") {
+            // 挑発(注目度低)
+            const att = minmax(-50, attention, 50);
+            const v = -0.8 * (att / 100) + 0.6;
+            return { vo: v, da: v, vi: v };
+          }
+          if (type === "deleteUp") {
+            // バフ消去
+            const vo =
+              0.2 *
+              (1 +
+                minmax(0, Number(this.appealCalcValues.effectCount.up.vo), 4));
+            const da =
+              0.2 *
+              (1 +
+                minmax(0, Number(this.appealCalcValues.effectCount.up.da), 4));
+            const vi =
+              0.2 *
+              (1 +
+                minmax(0, Number(this.appealCalcValues.effectCount.up.vi), 4));
+            return { vo, da, vi };
+          }
+          if (type === "deleteDown") {
+            // デバフ消去
+            const vo =
+              0.2 *
+              (1 +
+                minmax(
+                  0,
+                  Number(this.appealCalcValues.effectCount.down.vo),
+                  4
+                ));
+            const da =
+              0.2 *
+              (1 +
+                minmax(
+                  0,
+                  Number(this.appealCalcValues.effectCount.down.da),
+                  4
+                ));
+            const vi =
+              0.2 *
+              (1 +
+                minmax(
+                  0,
+                  Number(this.appealCalcValues.effectCount.down.vi),
+                  4
+                ));
+            return { vo, da, vi };
+          }
+          return { vo: 1, da: 1, vi: 1 };
+        };
+
+        const k = typeValue(selected.type);
+        return {
+          vo: this.$round(k.vo * vo, 4),
+          da: this.$round(k.da * da, 4),
+          vi: this.$round(k.vi * vi, 4)
+        };
+      };
+      return calc(selected);
+    },
     baseAppeal() {
       // フェスアピール基礎値 = 2.0 * アピールするアイドルの該当ステータス + 0.5 * (アピールしないアイドルの該当ステータス)
       // 基礎係数 = INT(フェスアピール基礎値 * 該当属性バフ合計値 * アピール係数 * 興味値)
       const fes = this.fesAppeal; // フェスアピール基礎値
       const buff = this.totalBuff;
       const action = Number(this.appealCalcValues.action); // Perfect とか
-      const appealFactor = this.appealCalcValues.factor; // 何倍アピールか
+      const appealFactor = this.appealFactor; // 何倍アピールか
       const calc = (fes, factor, buff, action) => {
         return Math.floor(Math.floor(fes * factor * (1 + buff / 100)) * action);
       };
@@ -1272,6 +1693,10 @@ export default {
       // 入力値クリア
       this.$set(this.appealCalcValues, "factor", { vo: 0, da: 0, vi: 0 });
       this.$set(this.appealCalcValues, "effect", { vo: 0, da: 0, vi: 0 });
+      this.$set(this.appealCalcValues, "effectCount", {
+        up: { vo: 0, da: 0, vi: 0 },
+        down: { vo: 0, da: 0, vi: 0 }
+      });
       this.$set(this.appealCalcValues, "passive", { vo: 0, da: 0, vi: 0 });
       this.$set(this.appealCalcValues, "interest", {
         vo: [0, 0, 0, 0, 0],
@@ -1325,27 +1750,28 @@ export default {
         abilities: this.$deepCopy(this.abilities)
       });
     },
-    chooseSample() {
-      // サンプルのアピール倍率を適用
-      if (!this.appealSample) {
-        return;
-      }
-      if (this.appealSample === "vo-sample") {
-        // Vo 2.5
-        this.$set(this.appealCalcValues, "factor", { vo: 2.5, da: 0, vi: 0 });
-      } else if (this.appealSample === "da-sample") {
-        // Da 2.5
-        this.$set(this.appealCalcValues, "factor", { vo: 0, da: 2.5, vi: 0 });
-      } else if (this.appealSample === "vi-sample") {
-        // Vi 2.5
-        this.$set(this.appealCalcValues, "factor", { vo: 0, da: 0, vi: 2.5 });
-      } else if (this.appealSample === "composite-sample") {
-        this.$set(this.appealCalcValues, "factor", { vo: 2, da: 0, vi: 2 });
-      }
-    },
     gotoTop() {
       // ウインドウを一番上に戻す
       window.scrollTo(0, 0);
+    },
+    addAppealTemplate() {
+      // アピールテンプレートを追加
+      this.$store.commit("addAppealTemplate", this.appealTemplateValues);
+      // 入力は初期化
+      this.$set(this, "appealTemplateValues", {
+        name: "",
+        position: "center",
+        type: "",
+        factor: { vo: 0, da: 0, vi: 0 }
+      });
+    },
+    deleteAppealTemplate() {
+      // 選択中のアピールテンプレートを削除
+      this.$store.commit("deleteAppealTemplate", this.selectedAppealTemplate);
+    },
+    deleteAllAppealTemplate() {
+      // 選択中のアピールテンプレートを削除
+      this.$store.commit("deleteAllAppealTemplate");
     }
   }
 };
@@ -1362,6 +1788,10 @@ export default {
 
 .cell-col {
   min-height: 42px;
+}
+
+.label-input-col {
+  min-height: 72px;
 }
 
 @media screen and (max-width: 800px) {

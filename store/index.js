@@ -14,7 +14,8 @@ export const state = () => ({
     { index: 7, unit: undefined, version },
     { index: 8, unit: undefined, version },
     { index: 9, unit: undefined, version }
-  ]
+  ],
+  appealTemplates: []
 });
 
 export const getters = {
@@ -46,6 +47,21 @@ export const mutations = {
   },
   clear(state, index) {
     state.saves[index].unit = undefined;
+  },
+  addAppealTemplate(state, tpl) {
+    state.appealTemplates.push(tpl);
+  },
+  deleteAppealTemplate(state, index) {
+    if (index === "") {
+      return;
+    }
+    const target = Number(index);
+    state.appealTemplates = state.appealTemplates.filter((v, idx) => {
+      return idx !== target;
+    });
+  },
+  deleteAllAppealTemplate(state) {
+    state.appealTemplates = [];
   }
 };
 export const actions = {};
