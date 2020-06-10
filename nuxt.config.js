@@ -10,7 +10,7 @@ export default {
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       {
         name: "google-site-verification",
-        content: "DjjXdXzaxHvNwrz6-vtuOLqjtK9tzGsrkT2TVnZbF4g"
+        content: "VQv-I7dfQbkMa1izftgHkxRW_rZNYPi8n7LGsQyerMo"
       },
       {
         hid: "description",
