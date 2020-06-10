@@ -1,2 +1,3 @@
 User-agent: *
 Allow: *
+Sitemap: https://kind-agnesi-553039.netlify.app/sitemap.xml
