@@ -138,14 +138,6 @@ class AppealCalculator {
       abilities.slowStarter * Math.min(20, 4 + ((2 * 8) / 9) * turnFactor);
     // パーフェクトリィ (仮)
     const perfectly = abilities.perfectly * 10;
-    console.log({
-      bond,
-      highMemory,
-      lowMemory,
-      turnFactor,
-      startDash,
-      slowStart
-    });
     return this.sum([
       bond,
       highMemory,
@@ -215,10 +207,11 @@ class AppealCalculator {
    * @param {*} factor {vo, da, vi} の最大倍率
    */
   extraAppealFactor(unit, appealCalcValues, type, factor) {
+    const { memory, mental, attention, effectCount } = appealCalcValues;
     const innerFactor = type => {
       const maxMental = Number(this.unitInfo(unit).me);
-      const mental = Number(appealCalcValues.mental);
-      const per = maxMental === 0 ? 1 : mental / maxMental;
+      const men = Number(mental);
+      const per = maxMental === 0 ? 1 : men / maxMental;
       if (type === "haisui") {
         // 背水の場合
         const v = 1 - 0.8 * per;
@@ -229,51 +222,62 @@ class AppealCalculator {
         const v = Math.max(0.2, 1.6 * per - 0.6);
         return { vo: v, da: v, vi: v };
       }
-      const mem = Number(appealCalcValues.memory);
+      const mem = Number(memory);
       if (type === "shinnai") {
         // 親愛の場合
         const v = 0.8 * (mem / 100) + 0.2;
         return { vo: v, da: v, vi: v };
       }
-      const attention = Number(appealCalcValues.attention);
       const minmax = (x, y, z) => {
         return Math.max(x, Math.min(y, z));
       };
       if (type === "tyouhatsu") {
         // 挑発(注目度高)
-        const att = minmax(0, attention, 200);
+        const att = minmax(0, Number(attention), 200);
         const v = 0.4 * (att / 100) + 0.2;
         return { vo: v, da: v, vi: v };
       }
       if (type === "onmitsu") {
         // 挑発(注目度低)
-        const att = minmax(-50, attention, 50);
+        const att = minmax(-50, Number(attention), 50);
         const v = -0.8 * (att / 100) + 0.6;
         return { vo: v, da: v, vi: v };
       }
       if (type === "deleteUp") {
         // バフ消去
-        const vo =
-          0.2 * (1 + minmax(0, Number(appealCalcValues.effectCount.up.vo), 4));
-        const da =
-          0.2 * (1 + minmax(0, Number(appealCalcValues.effectCount.up.da), 4));
-        const vi =
-          0.2 * (1 + minmax(0, Number(appealCalcValues.effectCount.up.vi), 4));
+        const vo = 0.2 * (1 + minmax(0, Number(effectCount.up.vo), 4));
+        const da = 0.2 * (1 + minmax(0, Number(effectCount.up.da), 4));
+        const vi = 0.2 * (1 + minmax(0, Number(effectCount.up.vi), 4));
         return { vo, da, vi };
+      }
+      if (type.startsWith("deleteUp")) {
+        // 特定バフ消去
+        const buff = [
+          type.includes("Vo") ? Number(effectCount.up.vo) : 0,
+          type.includes("Da") ? Number(effectCount.up.da) : 0,
+          type.includes("Vi") ? Number(effectCount.up.vi) : 0
+        ].reduce((prev, curr) => prev + curr);
+        const factor = 0.2 * (1 + minmax(0, buff, 4));
+        return { vo: factor, da: factor, vi: factor };
       }
       if (type === "deleteDown") {
         // デバフ消去
-        const vo =
-          0.2 *
-          (1 + minmax(0, Number(appealCalcValues.effectCount.down.vo), 4));
-        const da =
-          0.2 *
-          (1 + minmax(0, Number(appealCalcValues.effectCount.down.da), 4));
-        const vi =
-          0.2 *
-          (1 + minmax(0, Number(appealCalcValues.effectCount.down.vi), 4));
+        const vo = 0.2 * (1 + minmax(0, Number(effectCount.down.vo), 4));
+        const da = 0.2 * (1 + minmax(0, Number(effectCount.down.da), 4));
+        const vi = 0.2 * (1 + minmax(0, Number(effectCount.down.vi), 4));
         return { vo, da, vi };
       }
+      if (type.startsWith("deleteDown")) {
+        // 特定デバフ消去
+        const buff = [
+          type.includes("Vo") ? Number(effectCount.down.vo) : 0,
+          type.includes("Da") ? Number(effectCount.down.da) : 0,
+          type.includes("Vi") ? Number(effectCount.down.vi) : 0
+        ].reduce((prev, curr) => prev + curr);
+        const factor = 0.2 * (1 + minmax(0, buff, 4));
+        return { vo: factor, da: factor, vi: factor };
+      }
+      // それ以外 (通常補正)
       return { vo: 1, da: 1, vi: 1 };
     };
     const inner = innerFactor(type);
@@ -314,6 +318,53 @@ class AppealCalculator {
       selected.type,
       selected.factor
     );
+  }
+
+  /**
+   * 追撃分のアピールを抽出するための述語を返します。
+   */
+  getAppendAppealTypePredicate() {
+    return type => {
+      return type !== "" && type !== "buff" && !type.startsWith("link");
+    };
+  }
+
+  /**
+   * Linkアピールを抽出するための述語を返します。
+   */
+  getExtraAppealTypePredicate() {
+    return type => {
+      return type.startsWith("link");
+    };
+  }
+
+  /**
+   * 追撃分のアピール倍率を算出して返します
+   * @param {*} unit ユニット情報
+   * @param {*} appealCalcValues アピール情報
+   * @param {*} selected アピールテンプレートで選ばれた情報
+   * @param {*} predicate アピール倍率抽出判定用の述語
+   */
+  appendAppealFactor(unit, appealCalcValues, selected, predicate) {
+    if (!selected) {
+      return [{ vo: 0, da: 0, vi: 0 }];
+    }
+
+    // 追加アピールを取得
+    const appendAppeals = selected.append.filter(v => predicate(v.type));
+    return appendAppeals.map(ap => {
+      const type = ap.type.startsWith("link") ? ap.type.substr(5) : ap.type;
+      const factor = this.extraAppealFactor(
+        unit,
+        appealCalcValues,
+        type,
+        ap.factor
+      );
+      return {
+        type,
+        factor
+      };
+    });
   }
 
   /**
