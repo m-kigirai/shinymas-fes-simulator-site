@@ -16,7 +16,7 @@ export default {
         hid: "description",
         name: "description",
         content:
-          "THE iDOLM@STER ShinyColorsのフェスモードのアピール計算を行えるサイトです"
+          "THE iDOLM@STER ShinyColorsのフェスモード(フェスリハーサル・グレードフェス)のアピール計算を行えるサイトです"
       }
     ],
     link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }]
@@ -34,6 +34,7 @@ export default {
    */
   plugins: [
     { src: "~/plugins/localStorage.js", mode: "client" },
+    { src: "~/plugins/calculator.js" },
     { src: "~/plugins/utils.js" }
   ],
   /*
