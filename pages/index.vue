@@ -623,6 +623,7 @@
               <b-form-input
                 v-model="appealFactor.vo"
                 type="number"
+                step="0.001"
                 :disabled="true"
               />
             </b-col>
@@ -630,6 +631,7 @@
               <b-form-input
                 v-model="appealFactor.da"
                 type="number"
+                step="0.001"
                 :disabled="true"
               />
             </b-col>
@@ -637,6 +639,7 @@
               <b-form-input
                 v-model="appealFactor.vi"
                 type="number"
+                step="0.001"
                 :disabled="true"
               />
             </b-col>
@@ -664,6 +667,35 @@
                 v-model="appealCalcValues.factor.vi"
                 type="number"
                 step="0.001"
+              />
+            </b-col>
+          </b-row>
+          <b-row v-if="selectedMemory" cols="4">
+            <b-col class="cell-col">
+              <span class="bold">ユニット思い出補正</span>
+            </b-col>
+            <b-col class="vo">
+              <b-form-input
+                v-model="calcMemory.unitFactor"
+                type="number"
+                step="0.001"
+                :disabled="true"
+              />
+            </b-col>
+            <b-col class="da">
+              <b-form-input
+                v-model="calcMemory.unitFactor"
+                type="number"
+                step="0.001"
+                :disabled="true"
+              />
+            </b-col>
+            <b-col class="vi">
+              <b-form-input
+                v-model="calcMemory.unitFactor"
+                type="number"
+                step="0.001"
+                :disabled="true"
               />
             </b-col>
           </b-row>
@@ -839,7 +871,124 @@
               ></b-form-select>
             </b-col>
           </b-row>
+          <!-- 追加効果算出 -->
+          <div v-if="detailMode">
+            <b-row style="padding-top: 4px;">
+              <b-col sm="3">
+                <span class="bold">加算/追撃(1)</span>
+              </b-col>
+              <b-col sm="9">
+                <b-form-select
+                  v-model="selectedAppealTemplateExtras.ex1"
+                  :options="appealTemplateChooseOptions"
+                ></b-form-select>
+              </b-col>
+            </b-row>
+            <b-row style="padding-top: 4px;">
+              <b-col sm="3">
+                <span class="bold">加算/追撃(2)</span>
+              </b-col>
+              <b-col sm="9">
+                <b-form-select
+                  v-model="selectedAppealTemplateExtras.ex2"
+                  :options="appealTemplateChooseOptions"
+                ></b-form-select>
+              </b-col>
+            </b-row>
+            <b-row cols="4">
+              <b-col class="cell-col">
+                <span class="bold">追加バフ個数</span>
+              </b-col>
+              <b-col class="vo">
+                <b-form-input
+                  v-model="appealCalcValues.effectCount.up.vo"
+                  type="number"
+                />
+              </b-col>
+              <b-col class="da">
+                <b-form-input
+                  v-model="appealCalcValues.effectCount.up.da"
+                  type="number"
+                />
+              </b-col>
+              <b-col class="vi">
+                <b-form-input
+                  v-model="appealCalcValues.effectCount.up.vi"
+                  type="number"
+                />
+              </b-col>
+            </b-row>
+            <b-row cols="4">
+              <b-col class="cell-col">
+                <span class="bold">追加デバフ個数</span>
+              </b-col>
+              <b-col class="vo">
+                <b-form-input
+                  v-model="appealCalcValues.effectCount.down.vo"
+                  type="number"
+                />
+              </b-col>
+              <b-col class="da">
+                <b-form-input
+                  v-model="appealCalcValues.effectCount.down.da"
+                  type="number"
+                />
+              </b-col>
+              <b-col class="vi">
+                <b-form-input
+                  v-model="appealCalcValues.effectCount.down.vi"
+                  type="number"
+                />
+              </b-col>
+            </b-row>
+            <b-row cols="4">
+              <b-col class="cell-col">
+                <span class="bold">追加効果(アイコン, %)</span>
+              </b-col>
+              <b-col class="vo">
+                <b-form-input
+                  v-model="appealCalcValues.effect.vo"
+                  type="number"
+                />
+              </b-col>
+              <b-col class="da">
+                <b-form-input
+                  v-model="appealCalcValues.effect.da"
+                  type="number"
+                />
+              </b-col>
+              <b-col class="vi">
+                <b-form-input
+                  v-model="appealCalcValues.effect.vi"
+                  type="number"
+                />
+              </b-col>
+            </b-row>
+            <b-row style="padding-top: 4px;">
+              <b-col sm="3">
+                <span class="bold">LINKアピール(1)</span>
+              </b-col>
+              <b-col sm="9">
+                <b-form-select
+                  v-model="selectedAppealTemplateExtras.ex3"
+                  :options="appealTemplateChooseOptions"
+                ></b-form-select>
+              </b-col>
+            </b-row>
+            <b-row style="padding-top: 4px;">
+              <b-col sm="3">
+                <span class="bold">LINKアピール(1)</span>
+              </b-col>
+              <b-col sm="9">
+                <b-form-select
+                  v-model="selectedAppealTemplateExtras.ex3"
+                  :options="appealTemplateChooseOptions"
+                ></b-form-select>
+              </b-col>
+            </b-row>
+          </div>
           <br />
+          <!-- その他計算結果 -->
           <b-row>
             <b-col>
               <h3>その他シミュレーション結果</h3>
@@ -1093,6 +1242,13 @@ export default {
         }
       },
       selectedAppealTemplate: "",
+      selectedAppealTemplateExtras: {
+        ex1: "",
+        ex2: "",
+        ex3: "",
+        ex4: "",
+        ex5: ""
+      },
       // アピールテンプレート登録の実施者オプション
       appealTemplatePositionOptions: [
         { value: "center", text: "Center" },
@@ -1265,341 +1421,93 @@ export default {
       return [{ value: "", text: "--------" }].concat(saved);
     },
     appealBaseValues() {
-      const idx = this.idx;
-      const { leader, vocal, center, dance, visual } = this.unit;
-      const [voSum, daSum, viSum] = [
-        this.appealSum(idx.vo),
-        this.appealSum(idx.da),
-        this.appealSum(idx.vi)
-      ];
-      return [
-        {
-          type: "Vocal",
-          leader: 1.5 * leader.appeals[idx.vo] + 0.5 * voSum,
-          vocal: 1.5 * vocal.appeals[idx.vo] + 0.5 * voSum,
-          center: 1.5 * center.appeals[idx.vo] + 0.5 * voSum,
-          dance: 1.5 * dance.appeals[idx.vo] + 0.5 * voSum,
-          visual: 1.5 * visual.appeals[idx.vo] + 0.5 * voSum
-        },
-        {
-          type: "Dance",
-          leader: 1.5 * leader.appeals[idx.da] + 0.5 * daSum,
-          vocal: 1.5 * vocal.appeals[idx.da] + 0.5 * daSum,
-          center: 1.5 * center.appeals[idx.da] + 0.5 * daSum,
-          dance: 1.5 * dance.appeals[idx.da] + 0.5 * daSum,
-          visual: 1.5 * visual.appeals[idx.da] + 0.5 * daSum
-        },
-        {
-          type: "Vocal",
-          leader: 1.5 * leader.appeals[idx.vi] + 0.5 * viSum,
-          vocal: 1.5 * vocal.appeals[idx.vi] + 0.5 * viSum,
-          center: 1.5 * center.appeals[idx.vi] + 0.5 * viSum,
-          dance: 1.5 * dance.appeals[idx.vi] + 0.5 * viSum,
-          visual: 1.5 * visual.appeals[idx.vi] + 0.5 * viSum
-        }
-      ];
+      return this.$calc.appealBaseValues(this.idx, this.unit);
     },
     calcMemory() {
-      const { leader, vocal, center, dance, visual } = this.unit;
-      // センターの思い出がLv.5の場合、「基礎倍率」は2.0、Lv.4なら1.4、Lv.3は1.2、Lv.2は1.0、Lv.1は0.8 となる
-      const memoryFactors = [0, 0.8, 1.0, 1.2, 1.4, 2.0];
-      const memoryFactor = memoryFactors[center.memory];
-      // 編成補正: 思い出Lv.5 = 0.075、Lv.4 = 0.05、Lv.3 = 0.03、Lv.2 = 0.02、Lv.1 =Lv.0 = 0
-      const lv2factors = [0, 0, 0.02, 0.03, 0.05, 0.075];
-      // 小数点誤差の補正
-      const unitFactor =
-        Math.round(
-          10000 *
-            (1.0 +
-              lv2factors[leader.memory] +
-              lv2factors[vocal.memory] +
-              lv2factors[dance.memory] +
-              lv2factors[visual.memory])
-        ) / 10000;
-      const lv = center.memory >= 5 ? "MAX" : center.memory;
-      const unitFactorLabel = Math.floor(unitFactor * 100) / 100;
-      const label = `Lv. ${lv} (編成補正 x ${unitFactorLabel})`;
-      return { label, memoryFactor, unitFactor };
+      return this.$calc.memoryInfo(this.unit);
     },
     unitCalc() {
-      // フェスユニットの数値を計算
-      const idx = this.idx;
-      const { leader, vocal, center, dance, visual } = this.unit;
-      const [vo, da, vi] = [this.voAppeals, this.daAppeals, this.viAppeals];
-      const [voSum, daSum, viSum] = [
-        this.appealSum(idx.vo),
-        this.appealSum(idx.da),
-        this.appealSum(idx.vi)
-      ];
-      return {
-        memory: this.calcMemory,
-        vo: Math.ceil(1.5 * vocal.appeals[idx.vo] + 0.5 * voSum),
-        da: Math.ceil(1.5 * dance.appeals[idx.da] + 0.5 * daSum),
-        vi: Math.ceil(1.5 * visual.appeals[idx.vi] + 0.5 * viSum),
-        me: this.appealSum(idx.me)
-      };
+      return this.$calc.unitInfo(this.unit);
     },
     abilityBuff() {
       // アビリティによる Buff の合計数値(%)を返す
-      const bond = this.abilities.bond * 5; // 絆個数 x 5
-      const memory = this.appealCalcValues.memory;
-      const highMemory =
-        this.abilities.appealUpByHighMemory * ((memory / 100) * 8 + 2);
-      const lowMemory =
-        this.abilities.appealUpByLowMemory * ((1 - memory / 100) * 16 + 4);
-      const turnFactor = this.appealCalcValues.turn - 1;
-      const startDash =
-        this.abilities.startDash * Math.max(2, 10 - (8 / 9) * turnFactor);
-      const slowStart =
-        this.abilities.slowStarter *
-        Math.min(20, 4 + ((2 * 8) / 9) * turnFactor);
-      const perfectly = this.abilities.perfectly * 10;
-      return this.sum([
-        bond,
-        highMemory,
-        lowMemory,
-        startDash,
-        slowStart,
-        perfectly
-      ]);
+      return this.$calc.abilityBuff(this.abilities, this.appealCalcValues);
     },
     fesAppeal() {
-      const fesBase = this.appealBaseValues;
-      const position = () => {
-        // ポジションの決定
-        if (this.selectedAppealTemplate !== "") {
-          const index = Number(this.selectedAppealTemplate);
-          if (index < this.$store.state.appealTemplates.length) {
-            return this.$store.state.appealTemplates[index].position;
-          }
-        }
-        if (this.appealCalcValues.position === "memory") {
-          return "center";
-        }
-        return this.appealCalcValues.position;
-      };
-      const k = position();
-      const vo = fesBase[0][k];
-      const da = fesBase[1][k];
-      const vi = fesBase[2][k];
-      return { vo, da, vi };
+      const position = this.$calc.appealPosition(
+        this.selectedAppealTemplate,
+        this.$store.state.appealTemplates,
+        this.appealCalcValues
+      );
+      return this.$calc.fesAppeal(this.unit, position);
     },
     totalBuff() {
-      const effect = this.appealCalcValues.effect;
-      const passive = this.appealCalcValues.passive;
-      const ability = this.abilityBuff;
-      const vo = this.sum([ability, effect.vo, passive.vo]);
-      const da = this.sum([ability, effect.da, passive.da]);
-      const vi = this.sum([ability, effect.vi, passive.vi]);
-      return { vo, da, vi };
+      return this.$calc.totalBuff(this.abilities, this.appealCalcValues);
     },
     totalInterest() {
       // 累計興味値を算出
-      // 全審査員につくアビリティ分
-      let abilityEffect = 1;
-      for (let i = 0; i < this.abilities.interestUp; i++) {
-        // 人気者: 3% UP
-        abilityEffect = abilityEffect * 1.03;
-      }
-      for (let i = 0; i < this.abilities.interestDown; i++) {
-        // 控えめ: 3% DOWN
-        abilityEffect = abilityEffect * 0.97;
-      }
-      // 審査員個別の効果
-      const pred = v => {
-        return Math.abs(Number(v)) > 0;
-      };
-      const productions = (prev, curr) => {
-        const per = Number(curr);
-        return prev * (1 + per / 100);
-      };
-      const vo = this.appealCalcValues.interest.vo
-        .filter(pred)
-        .reduce(productions, abilityEffect);
-      const da = this.appealCalcValues.interest.da
-        .filter(pred)
-        .reduce(productions, abilityEffect);
-      const vi = this.appealCalcValues.interest.vi
-        .filter(pred)
-        .reduce(productions, abilityEffect);
-      return {
-        vo: this.$round(vo, 5),
-        da: this.$round(da, 5),
-        vi: this.$round(vi, 5)
-      };
+      return this.$calc.totalInterest(this.appealCalcValues, this.abilities);
     },
     templateSelected() {
       return this.selectedAppealTemplate !== "";
     },
     appealFactor() {
-      // 何倍アピールかの算出
-      if (this.selectedAppealTemplate === "") {
-        return this.appealCalcValues.factor;
-      }
-
-      const index = Number(this.selectedAppealTemplate);
-      const selected = this.$store.state.appealTemplates[index];
-      if (!selected) {
-        return this.appealCalcValues.factor;
-      }
-      const calc = selected => {
-        // 実際の計算ロジック
-        const vo = selected.factor.vo;
-        const da = selected.factor.da;
-        const vi = selected.factor.vi;
-        if (!selected.type) {
-          return { vo, da, vi };
-        }
-        // それ以外の場合は外部要素 K をかける
-        const maxMental = Number(this.unitCalc.me);
-        const mental = Number(this.appealCalcValues.mental);
-        const per = maxMental === 0 ? 1 : mental / maxMental;
-        const typeValue = type => {
-          if (type === "haisui") {
-            // 背水の場合
-            const v = 1 - 0.8 * per;
-            return { vo: v, da: v, vi: v };
-          }
-          if (type === "konshin") {
-            // 渾身の場合
-            const v = Math.max(0.2, 1.6 * per - 0.6);
-            return { vo: v, da: v, vi: v };
-          }
-          const mem = Number(this.appealCalcValues.memory);
-          if (type === "shinnai") {
-            // 親愛の場合
-            const v = 0.8 * (mem / 100) + 0.2;
-            return { vo: v, da: v, vi: v };
-          }
-          const attention = Number(this.appealCalcValues.attention);
-          const minmax = (x, y, z) => {
-            return Math.max(x, Math.min(y, z));
-          };
-          if (type === "tyouhatsu") {
-            // 挑発(注目度高)
-            const att = minmax(0, attention, 200);
-            const v = 0.4 * (att / 100) + 0.2;
-            return { vo: v, da: v, vi: v };
-          }
-          if (type === "onmitsu") {
-            // 挑発(注目度低)
-            const att = minmax(-50, attention, 50);
-            const v = -0.8 * (att / 100) + 0.6;
-            return { vo: v, da: v, vi: v };
-          }
-          if (type === "deleteUp") {
-            // バフ消去
-            const vo =
-              0.2 *
-              (1 +
-                minmax(0, Number(this.appealCalcValues.effectCount.up.vo), 4));
-            const da =
-              0.2 *
-              (1 +
-                minmax(0, Number(this.appealCalcValues.effectCount.up.da), 4));
-            const vi =
-              0.2 *
-              (1 +
-                minmax(0, Number(this.appealCalcValues.effectCount.up.vi), 4));
-            return { vo, da, vi };
-          }
-          if (type === "deleteDown") {
-            // デバフ消去
-            const vo =
-              0.2 *
-              (1 +
-                minmax(
-                  0,
-                  Number(this.appealCalcValues.effectCount.down.vo),
-                  4
-                ));
-            const da =
-              0.2 *
-              (1 +
-                minmax(
-                  0,
-                  Number(this.appealCalcValues.effectCount.down.da),
-                  4
-                ));
-            const vi =
-              0.2 *
-              (1 +
-                minmax(
-                  0,
-                  Number(this.appealCalcValues.effectCount.down.vi),
-                  4
-                ));
-            return { vo, da, vi };
-          }
-          return { vo: 1, da: 1, vi: 1 };
-        };
-
-        const k = typeValue(selected.type);
-        return {
-          vo: this.$round(k.vo * vo, 4),
-          da: this.$round(k.da * da, 4),
-          vi: this.$round(k.vi * vi, 4)
-        };
-      };
-      return calc(selected);
+      return this.$calc.appealFactor(
+        this.unit,
+        this.appealCalcValues,
+        this.selectedAppealTemplate,
+        this.$store.state.appealTemplates
+      );
     },
     baseAppeal() {
-      // フェスアピール基礎値 = 2.0 * アピールするアイドルの該当ステータス + 0.5 * (アピールしないアイドルの該当ステータス)
-      // 基礎係数 = INT(フェスアピール基礎値 * 該当属性バフ合計値 * アピール係数 * 興味値)
-      const fes = this.fesAppeal; // フェスアピール基礎値
-      const buff = this.totalBuff;
-      const action = Number(this.appealCalcValues.action); // Perfect とか
-      const appealFactor = this.appealFactor; // 何倍アピールか
-      const calc = (fes, factor, buff, action) => {
-        return Math.floor(Math.floor(fes * factor * (1 + buff / 100)) * action);
-      };
-      const vo = calc(fes.vo, appealFactor.vo, buff.vo, action);
-      const da = calc(fes.da, appealFactor.da, buff.da, action);
-      const vi = calc(fes.vi, appealFactor.vi, buff.vi, action);
-
-      return { vo, da, vi };
+      const position = this.$calc.appealPosition(
+        this.selectedAppealTemplate,
+        this.$store.state.appealTemplates,
+        this.appealCalcValues
+      );
+      return this.$calc.baseAppeal(
+        position,
+        this.unit,
+        this.appealFactor,
+        this.appealCalcValues,
+        this.abilities
+      );
+    },
+    selectedMemory() {
+      // 思い出計算が有効な場合 true
+      return (
+        !this.templateSelected && this.appealCalcValues.position === "memory"
+      );
     },
     voAppeal() {
-      const base = this.baseAppeal;
-      const interest = this.totalInterest;
-      const vo = Math.floor(Math.floor(base.vo) * 2 * interest.vo);
-      const da = Math.floor(Math.floor(base.da) * interest.vo);
-      const vi = Math.floor(Math.floor(base.vi) * interest.vo);
-      return {
-        vo,
-        da,
-        vi,
-        total: vo + da + vi,
-        label: this.compositeLabel(vo, da, vi)
-      };
+      const memoryFactor = this.selectedMemory ? this.calcMemory.unitFactor : 1;
+      const appeal = this.$calc.voAppeal(
+        this.baseAppeal,
+        this.totalInterest,
+        memoryFactor
+      );
+      appeal.label = this.compositeLabel(appeal.vo, appeal.da, appeal.vi);
+      return appeal;
     },
     daAppeal() {
-      const base = this.baseAppeal;
-      const interest = this.totalInterest;
-      const vo = Math.floor(Math.floor(base.vo) * interest.da);
-      const da = Math.floor(Math.floor(base.da) * 2 * interest.da);
-      const vi = Math.floor(Math.floor(base.vi) * interest.da);
-      return {
-        vo,
-        da,
-        vi,
-        total: vo + da + vi,
-        label: this.compositeLabel(vo, da, vi)
-      };
+      const memoryFactor = this.selectedMemory ? this.calcMemory.unitFactor : 1;
+      const appeal = this.$calc.daAppeal(
+        this.baseAppeal,
+        this.totalInterest,
+        memoryFactor
+      );
+      appeal.label = this.compositeLabel(appeal.vo, appeal.da, appeal.vi);
+      return appeal;
     },
     viAppeal() {
-      const base = this.baseAppeal;
-      const interest = this.totalInterest;
-      const vo = Math.floor(Math.floor(base.vo) * interest.vi);
-      const da = Math.floor(Math.floor(base.da) * interest.vi);
-      const vi = Math.floor(Math.floor(base.vi) * 2 * interest.vi);
-      return {
-        vo,
-        da,
-        vi,
-        total: vo + da + vi,
-        label: this.compositeLabel(vo, da, vi)
-      };
+      const memoryFactor = this.selectedMemory ? this.calcMemory.unitFactor : 1;
+      const appeal = this.$calc.viAppeal(
+        this.baseAppeal,
+        this.totalInterest,
+        memoryFactor
+      );
+      appeal.label = this.compositeLabel(appeal.vo, appeal.da, appeal.vi);
+      return appeal;
     }
   },
   methods: {
@@ -1622,7 +1530,7 @@ export default {
       if (this.appealCalcValues.position === "memory") {
         // 思い出の場合は各倍率を自動設定
         const memory = this.calcMemory;
-        const factor = memory.memoryFactor * memory.unitFactor;
+        const factor = memory.memoryFactor;
         this.appealCalcValues.factor.vo = factor;
         this.appealCalcValues.factor.da = factor;
         this.appealCalcValues.factor.vi = factor;

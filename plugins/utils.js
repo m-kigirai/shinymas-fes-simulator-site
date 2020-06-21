@@ -3,7 +3,7 @@ const deepCopy = obj => {
 };
 
 // 小数点まるめ
-const round = (number, precision) => {
+export const round = (number, precision) => {
   const shift = function(number, precision, reverseShift) {
     if (reverseShift) {
       precision = -precision;
