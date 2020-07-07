@@ -77,7 +77,7 @@ class AppealCalculator {
    * @param {object} unit ユニット情報
    */
   unitInfo(unit) {
-    const { vocal, dance, visual } = unit;
+    const { vocal, dance, visual, center, leader } = unit;
     const { vo, da, vi, me } = this.attributeIndex;
     // フェスユニットの数値を計算
     const [voSum, daSum, viSum] = [
@@ -85,11 +85,35 @@ class AppealCalculator {
       this.appealSum(unit, da),
       this.appealSum(unit, vi)
     ];
+    // 表示はユニット内の最大値
+    const [voMax, daMax, viMax] = [
+      Math.max(
+        vocal.appeals[vo],
+        dance.appeals[vo],
+        visual.appeals[vo],
+        center.appeals[vo],
+        leader.appeals[vo]
+      ),
+      Math.max(
+        vocal.appeals[da],
+        dance.appeals[da],
+        visual.appeals[da],
+        center.appeals[da],
+        leader.appeals[da]
+      ),
+      Math.max(
+        vocal.appeals[vi],
+        dance.appeals[vi],
+        visual.appeals[vi],
+        center.appeals[vi],
+        leader.appeals[vi]
+      )
+    ];
     return {
       memory: this.memoryInfo(unit),
-      vo: Math.ceil(1.5 * vocal.appeals[vo] + 0.5 * voSum),
-      da: Math.ceil(1.5 * dance.appeals[da] + 0.5 * daSum),
-      vi: Math.ceil(1.5 * visual.appeals[vi] + 0.5 * viSum),
+      vo: Math.ceil(1.5 * voMax + 0.5 * voSum),
+      da: Math.ceil(1.5 * daMax + 0.5 * daSum),
+      vi: Math.ceil(1.5 * viMax + 0.5 * viSum),
       me: this.appealSum(unit, me)
     };
   }
