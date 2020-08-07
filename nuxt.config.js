@@ -16,7 +16,7 @@ export default {
         hid: "description",
         name: "description",
         content:
-          "THE iDOLM@STER ShinyColorsのフェスモード(フェスリハーサル・グレードフェス)のアピール計算を行えるサイトです"
+          "THE iDOLM@STER ShinyColorsのフェスモード(フェスリハーサル・グレードフェス)の各種計算（アピール値算出、思い出アピール値算出)を行えるサイトです。"
       }
     ],
     link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }]
