@@ -188,16 +188,19 @@ class AppealCalculator {
   /**
    * 累積興味値(実数)を算出します
    */
-  totalInterest(appealCalcValues, abilities) {
+  totalInterest(appealCalcValues, abilities, ignoreDown) {
     // 全審査員につくアビリティ分
     let abilityEffect = 1;
     for (let i = 0; i < abilities.interestUp; i++) {
       // 人気者: 3% UP
       abilityEffect = abilityEffect * 1.03;
     }
-    for (let i = 0; i < abilities.interestDown; i++) {
-      // 控えめ: 3% DOWN
-      abilityEffect = abilityEffect * 0.97;
+    if (!ignoreDown) {
+      // 興味DOWN無視以外
+      for (let i = 0; i < abilities.interestDown; i++) {
+        // 控えめ: 3% DOWN
+        abilityEffect = abilityEffect * 0.97;
+      }
     }
     // 審査員個別の効果
     const pred = v => {
@@ -205,7 +208,8 @@ class AppealCalculator {
     };
     const productions = (prev, curr) => {
       const per = Number(curr);
-      return prev * (1 + per / 100);
+      const ignore = ignoreDown && per < 0;
+      return ignore ? prev : prev * (1 + per / 100);
     };
     const vo = appealCalcValues.interest.vo
       .filter(pred)

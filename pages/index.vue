@@ -10,14 +10,14 @@
           現在β版であり、結果が一致しないときがあります。
         </p>
         <b-alert show>
-          2020/08/08 - 注目度DOWNのアビリティ名称を正しい「ひかえめ」に修正 (thx
-          feedback!) (以前の更新履歴は <a href="/usage">こちら</a> から)
+          2020/09/01 - 詳細モードに【興味DOWN無視】を追加 (以前の更新履歴は
+          <a href="/usage">こちら</a> から)
         </b-alert>
       </b-col>
     </b-row>
     <b-row>
       <b-col>
-        <p><a href="/usage">利用方法の説明はこちら</a></p>
+        <p><a href="/usage">利用方法の説明や各種計算式はこちら</a></p>
       </b-col>
     </b-row>
     <br />
@@ -696,6 +696,20 @@
               />
             </b-col>
           </b-row>
+          <b-row v-if="detailMode">
+            <b-col sm="3">
+              <span class="bold">
+                興味値特殊計算
+              </span>
+            </b-col>
+            <b-col sm="9">
+              <b-form-select
+                v-model="appealCalcValues.interestIgnore"
+                :options="interestOptions"
+              ></b-form-select>
+            </b-col>
+          </b-row>
+
           <b-row>
             <b-col sm="3">
               <span class="bold">アピール係数</span>
@@ -1538,6 +1552,7 @@ export default {
           value: "deleteDownVoDaVi",
           text: "アピール: 消去:Vo.&Da.&Vi.DOWNが多いほど効果UP"
         },
+        { value: "ignoreInterestDown", text: "アピール: 興味DOWN無視" },
         { value: "", text: "-=-=-LINKアピール一覧-=-=-" },
         { value: "link-normal", text: "LINK: 通常アピール" },
         { value: "link-konshin", text: "LINK: メンタルが多いほど効果UP" },
@@ -1597,7 +1612,7 @@ export default {
           text: "LINK: 消去:Da.&Vi.DOWNが多いほど効果UP"
         },
         {
-          value: "deleteDownVoDaVi",
+          value: "link-deleteDownVoDaVi",
           text: "LINK: 消去:Vo.&Da.&Vi.DOWNが多いほど効果UP"
         }
       ],
@@ -1645,7 +1660,8 @@ export default {
           vo: [0, 0, 0, 0, 0],
           da: [0, 0, 0, 0, 0],
           vi: [0, 0, 0, 0, 0]
-        }
+        },
+        interestIgnore: "" // 興味値無視
       },
       appealBaseFields: [
         { key: "type", label: "", class: "" },
@@ -1688,6 +1704,13 @@ export default {
           value: "detail",
           text:
             "詳細モード(入力項目が増えます, アピール倍率自動算出で必要な場合があります)"
+        }
+      ],
+      interestOptions: [
+        { value: "", text: "通常" },
+        {
+          value: "ignoreDown",
+          text: "興味DOWN無視 (※ひかえめと興味値マイナスの項目を無視)"
         }
       ]
     };
@@ -1779,7 +1802,12 @@ export default {
     },
     totalInterest() {
       // 累計興味値を算出
-      return this.$calc.totalInterest(this.appealCalcValues, this.abilities);
+      const ignoreDown = this.appealCalcValues.interestIgnore === "ignoreDown";
+      return this.$calc.totalInterest(
+        this.appealCalcValues,
+        this.abilities,
+        ignoreDown
+      );
     },
     templateSelected() {
       return this.selectedAppealTemplate !== "";
