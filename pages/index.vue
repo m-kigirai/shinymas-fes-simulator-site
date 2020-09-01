@@ -1552,7 +1552,6 @@ export default {
           value: "deleteDownVoDaVi",
           text: "アピール: 消去:Vo.&Da.&Vi.DOWNが多いほど効果UP"
         },
-        { value: "ignoreInterestDown", text: "アピール: 興味DOWN無視" },
         { value: "", text: "-=-=-LINKアピール一覧-=-=-" },
         { value: "link-normal", text: "LINK: 通常アピール" },
         { value: "link-konshin", text: "LINK: メンタルが多いほど効果UP" },
