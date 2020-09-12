@@ -10,8 +10,9 @@
           現在β版であり、結果が一致しないときがあります。
         </p>
         <b-alert show>
-          2020/09/01 - 詳細モードに【興味DOWN無視】を追加 (以前の更新履歴は
-          <a href="/usage">こちら</a> から)
+          2020/09/13 -
+          <a href="/apptable">簡易アピール差分早見表</a>の生成機能を追加
+          (以前の更新履歴は<a href="/usage">こちら</a> から)
         </b-alert>
       </b-col>
     </b-row>
@@ -577,7 +578,7 @@
           </b-row>
         </b-tab>
         <!-- -->
-        <b-tab title="アピール値計算">
+        <b-tab title="アピール計算">
           <b-row>
             <b-col>
               <h2>実アピール値算出</h2>
@@ -1241,6 +1242,32 @@
             </b-col>
           </b-row>
           <br />
+        </b-tab>
+        <b-tab title="別機能">
+          <b-row>
+            <b-col>
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th style="min-width: 100px;">機能</th>
+                    <th>説明</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a href="/apptable">簡易アピール差分表</a></td>
+                    <td>
+                      フェスユニットのアピール値・バフが変化した場合、最終アピールにどれぐらいの変化があるのかを一覧表にして表示します。
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><a href="/usage">使い方・サイト説明</a></td>
+                    <td>このサイトの使い方、および、このサイトの説明です。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </b-col>
+          </b-row>
         </b-tab>
       </b-tabs>
     </div>
