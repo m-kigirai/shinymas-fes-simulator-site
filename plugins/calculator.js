@@ -435,17 +435,18 @@ class AppealCalculator {
   }
 
   /**
-   * 基礎係数を算出します
+   * アピール基礎係数を算出します
    */
   baseAppeal(position, unit, appealFactor, appealCalcValues, abilities) {
     // フェスアピール基礎値 = 2.0 * アピールするアイドルの該当ステータス
     //                      + 0.5 * (アピールしないアイドルの該当ステータス)
-    // 基礎係数 = INT(フェスアピール基礎値 * 該当属性バフ合計値 * アピール係数)
+    // 基礎係数 = INT(フェスアピール基礎値 * 該当属性バフ合計値 * アピール判定係数)
+    // アピール基礎係数 = INT(基礎係数 * アピール倍率)
     const fes = this.fesAppeal(unit, position);
     const buff = this.totalBuff(abilities, appealCalcValues);
     const action = Number(appealCalcValues.action); // Perfect とか
     const calc = (fes, factor, buff, action) => {
-      return Math.floor(Math.floor(fes * factor * (1 + buff / 100)) * action);
+      return Math.floor(Math.floor(fes * action * (1 + buff / 100)) * factor);
     };
 
     const vo = calc(fes.vo, appealFactor.vo, buff.vo, action);

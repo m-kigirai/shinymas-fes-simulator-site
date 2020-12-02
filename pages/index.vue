@@ -7,11 +7,11 @@
         </h1>
         <p>
           シャニマスのフェスモードでのアピール値を計算/シミュレーションするツールです。
-          現在β版であり、結果が一致しないときがあります。
+          現在β版であり、結果が一致しない可能性があります。
         </p>
         <b-alert show>
-          2020/09/13 -
-          <a href="/apptable">簡易アピール差分早見表</a>の生成機能を追加
+          2020/12/02 -
+          アピール計算式のバグを修正、興味DOWNが「物静か」なのでテキストを修正
           (以前の更新履歴は<a href="/usage">こちら</a> から)
         </b-alert>
       </b-col>
@@ -1364,7 +1364,7 @@ export default {
         appealUpByHighMemory: 0, // アピールUP (思い出高)
         appealUpByLowMemory: 0, // アピールUP (思い出低)
         interestUp: 0, // 人気者
-        interestDown: 0, // ひかえめ
+        interestDown: 0, // 物静か
         perfectly: 0, // パーフェクトリィ
         memoryUp: 0 // 思い出UP
       },
@@ -1407,7 +1407,7 @@ export default {
         },
         {
           key: "interestDown",
-          label: "ひかえめ (※他ユニットも含む)",
+          label: "物静か (※他ユニットも含む)",
           unit: "個",
           min: 0,
           max: 30
@@ -1736,7 +1736,7 @@ export default {
         { value: "", text: "通常" },
         {
           value: "ignoreDown",
-          text: "興味DOWN無視 (※ひかえめと興味値マイナスの項目を無視)"
+          text: "興味DOWN無視 (※物静かと興味値マイナスの項目を無視)"
         }
       ]
     };
@@ -2297,7 +2297,7 @@ export default {
           appealUpByHighMemory: 0, // アピールUP (思い出高)
           appealUpByLowMemory: 0, // アピールUP (思い出低)
           interestUp: 0, // 人気者
-          interestDown: 0, // ひかえめ
+          interestDown: 0, // 物静か
           perfectly: 0, // パーフェクトリィ
           memoryUp: 0 // 思い出UP
         });
