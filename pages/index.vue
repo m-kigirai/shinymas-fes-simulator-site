@@ -10,8 +10,8 @@
           現在β版であり、結果が一致しない可能性があります。
         </p>
         <b-alert show>
-          2020/12/02 -
-          アピール計算式のバグを修正、興味DOWNが「物静か」なのでテキストを修正
+          2021/07/02 -
+          ユニット総数によってアピール倍率が変化するスキルをテンプレートに実装。 興味無視計算の修正。
           (以前の更新履歴は<a href="/usage">こちら</a> から)
         </b-alert>
       </b-col>
@@ -687,7 +687,7 @@
           <b-row v-if="detailMode">
             <b-col sm="3">
               <span class="bold">
-                累計注目度(%)
+                ★累計注目度(%)
               </span>
             </b-col>
             <b-col sm="9">
@@ -700,7 +700,20 @@
           <b-row v-if="detailMode">
             <b-col sm="3">
               <span class="bold">
-                興味値特殊計算
+                ★ユニット混成状況
+              </span>
+            </b-col>
+            <b-col sm="9">
+              <b-form-select
+                v-model="appealCalcValues.unitCount"
+                :options="unitCountOptions"
+              ></b-form-select>
+            </b-col>
+          </b-row>
+          <b-row v-if="detailMode">
+            <b-col sm="3">
+              <span class="bold">
+                ★興味値特殊計算
               </span>
             </b-col>
             <b-col sm="9">
@@ -1507,6 +1520,10 @@ export default {
           value: "deleteDownVoDaVi",
           text: "消去:Vo.&Da.&Vi.DOWNが多いほど効果UP"
         },
+        {
+          value: "upByUnit",
+          text: "アピール: 所属ユニットが多いほど効果UP"
+        },
         { value: "memory5", text: "思い出アピール(Lv.MAX)" },
         { value: "memory4", text: "思い出アピール(Lv.4)" },
         { value: "memory3", text: "思い出アピール(Lv.3)" },
@@ -1579,6 +1596,10 @@ export default {
           value: "deleteDownVoDaVi",
           text: "アピール: 消去:Vo.&Da.&Vi.DOWNが多いほど効果UP"
         },
+        {
+          value: "upByUnit",
+          text: "アピール: 所属ユニットが多いほど効果UP"
+        },
         { value: "", text: "-=-=-LINKアピール一覧-=-=-" },
         { value: "link-normal", text: "LINK: 通常アピール" },
         { value: "link-konshin", text: "LINK: メンタルが多いほど効果UP" },
@@ -1640,6 +1661,10 @@ export default {
         {
           value: "link-deleteDownVoDaVi",
           text: "LINK: 消去:Vo.&Da.&Vi.DOWNが多いほど効果UP"
+        },
+        {
+          value: "link-upByUnit",
+          text: "LINK: 所属ユニットが多いほど効果UP"
         }
       ],
       appealCalcValues: {
@@ -1687,7 +1712,8 @@ export default {
           da: [0, 0, 0, 0, 0],
           vi: [0, 0, 0, 0, 0]
         },
-        interestIgnore: "" // 興味値無視
+        interestIgnore: "", // 興味値無視
+        unitCount: 1 // ユニット混成状況
       },
       appealBaseFields: [
         { key: "type", label: "", class: "" },
@@ -1729,15 +1755,22 @@ export default {
         {
           value: "detail",
           text:
-            "詳細モード(入力項目が増えます, アピール倍率自動算出で必要な場合があります)"
+            "詳細モード(★入力項目が増えます, アピール倍率自動算出で必要な場合があります)"
         }
       ],
       interestOptions: [
         { value: "", text: "通常" },
         {
           value: "ignoreDown",
-          text: "興味DOWN無視 (※物静かと興味値マイナスの項目を無視)"
+          text: "興味効果無視 (※興味値の上昇・下降効果をすべて無視)"
         }
+      ],
+      unitCountOptions: [
+        { value: 1, text: "1ユニットのみ" },
+        { value: 2, text: "2ユニット混成" },
+        { value: 3, text: "3ユニット混成" },
+        { value: 4, text: "4ユニット混成" },
+        { value: 5, text: "5ユニット混成" }
       ]
     };
   },

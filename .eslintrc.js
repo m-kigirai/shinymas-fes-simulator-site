@@ -20,6 +20,7 @@ module.exports = {
     "vue/html-indent": ["error", 2], // vueのインデントは2.
     "vue/html-self-closing": "off", //imgタグのようにタグが１つで完結してもOK
     "vue/singleline-html-element-content-newline": "off",
-    "vue/max-attributes-per-line": "off"
+    "vue/max-attributes-per-line": "off",
+    "vue/comment-directive": 0
   }
 };

@@ -191,12 +191,12 @@ class AppealCalculator {
   totalInterest(appealCalcValues, abilities, ignoreDown) {
     // 全審査員につくアビリティ分
     let abilityEffect = 1;
-    for (let i = 0; i < abilities.interestUp; i++) {
-      // 人気者: 3% UP
-      abilityEffect = abilityEffect * 1.03;
-    }
     if (!ignoreDown) {
-      // 興味DOWN無視以外
+      // 興味無視以外
+      for (let i = 0; i < abilities.interestUp; i++) {
+        // 人気者: 3% UP
+        abilityEffect = abilityEffect * 1.03;
+      }
       for (let i = 0; i < abilities.interestDown; i++) {
         // 控えめ: 3% DOWN
         abilityEffect = abilityEffect * 0.97;
@@ -208,7 +208,7 @@ class AppealCalculator {
     };
     const productions = (prev, curr) => {
       const per = Number(curr);
-      const ignore = ignoreDown && per < 0;
+      const ignore = ignoreDown;
       return ignore ? prev : prev * (1 + per / 100);
     };
     const vo = appealCalcValues.interest.vo
@@ -235,7 +235,13 @@ class AppealCalculator {
    * @param {*} factor {vo, da, vi} の最大倍率
    */
   extraAppealFactor(unit, appealCalcValues, type, factor) {
-    const { memory, mental, attention, effectCount } = appealCalcValues;
+    const {
+      memory,
+      mental,
+      attention,
+      effectCount,
+      unitCount
+    } = appealCalcValues;
     const innerFactor = type => {
       const maxMental = Number(this.unitInfo(unit).me);
       const men = Number(mental);
@@ -303,6 +309,22 @@ class AppealCalculator {
           type.includes("Vi") ? Number(effectCount.down.vi) : 0
         ].reduce((prev, curr) => prev + curr);
         const factor = 0.2 * (1 + minmax(0, buff, 4));
+        return { vo: factor, da: factor, vi: factor };
+      }
+      if (type === "upByUnit") {
+        // ユニット混成状況
+        const factor = (c => {
+          // 4ユニット以上で最大倍率
+          if (c <= 1) {
+            return 0.25;
+          } else if (c <= 2) {
+            return 0.5;
+          } else if (c <= 3) {
+            return 0.75;
+          } else {
+            return 1.0;
+          }
+        })(unitCount);
         return { vo: factor, da: factor, vi: factor };
       }
       // それ以外 (通常補正)
